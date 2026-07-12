@@ -11,6 +11,12 @@
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U mbg_user -d mbg_lms"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
     networks:
       - mbg-network
 
@@ -34,8 +40,10 @@
     ports:
       - "5000:5000"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - mbg-network
 
