@@ -48,8 +48,6 @@ const getAllUsers = async (query) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
-    phoneNumber: u.phone_number,
-    avatarUrl: u.avatar_url,
     createdAt: u.created_at
   }));
 
@@ -60,8 +58,8 @@ const getAllUsers = async (query) => {
     meta: {
       page,
       limit,
-      total,
-      totalPages
+      totalData: total,
+      totalPage: totalPages
     }
   };
 };
@@ -73,7 +71,7 @@ const getUserById = async (id) => {
   );
 
   if (result.rows.length === 0) {
-    throw new AppError('User not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const u = result.rows[0];
@@ -89,7 +87,7 @@ const getUserById = async (id) => {
 };
 
 const createUser = async (userData) => {
-  const { fullName, email, password, role, phoneNumber } = userData;
+  const { fullName, email, password, role } = userData;
 
   if (!fullName) throw new AppError('fullName tidak boleh kosong', 400, '02');
   if (!email) throw new AppError('email tidak boleh kosong', 400, '02');
@@ -109,10 +107,10 @@ const createUser = async (userData) => {
   const passwordHash = await hashPassword(password);
 
   const result = await db.query(
-    `INSERT INTO users (full_name, email, password_hash, role, phone_number)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, full_name, email, role, phone_number, created_at`,
-    [fullName, email, passwordHash, role, phoneNumber || null]
+    `INSERT INTO users (full_name, email, password_hash, role)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, full_name, email, role, created_at`,
+    [fullName, email, passwordHash, role]
   );
 
   const u = result.rows[0];
@@ -121,29 +119,56 @@ const createUser = async (userData) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
-    phoneNumber: u.phone_number,
     createdAt: u.created_at
   };
 };
 
 const updateUser = async (id, userData) => {
-  const { fullName, role, phoneNumber } = userData;
+  const { fullName, email, role } = userData;
 
   const userCheck = await db.query('SELECT id FROM users WHERE id = $1', [id]);
   if (userCheck.rows.length === 0) {
-    throw new AppError('User not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const result = await db.query(
     `UPDATE users 
      SET full_name = COALESCE($1, full_name), 
-         role = COALESCE($2, role), 
-         phone_number = COALESCE($3, phone_number)
+         email = COALESCE($2, email),
+         role = COALESCE($3, role)
      WHERE id = $4
-     RETURNING id, full_name, email, role, phone_number, avatar_url, created_at`,
-    [fullName, role, phoneNumber, id]
+     RETURNING id, full_name, email, role, created_at`,
+    [fullName, email, role, id]
   );
 
+  const u = result.rows[0];
+  return {
+    id: u.id,
+    fullName: u.full_name,
+    email: u.email,
+    role: u.role,
+    createdAt: u.created_at
+  };
+};
+
+const deleteUser = async (id) => {
+  const userCheck = await db.query('SELECT id FROM users WHERE id = $1', [id]);
+  if (userCheck.rows.length === 0) {
+    throw new AppError('Data tidak ditemukan', 404, '01');
+  }
+
+  await db.query('DELETE FROM users WHERE id = $1', [id]);
+  return true;
+};
+
+const getProfile = async (id) => {
+  const result = await db.query(
+    'SELECT id, full_name, email, role, phone_number, avatar_url, created_at FROM users WHERE id = $1',
+    [id]
+  );
+  if (result.rows.length === 0) {
+    throw new AppError('Data tidak ditemukan', 404, '01');
+  }
   const u = result.rows[0];
   return {
     id: u.id,
@@ -152,30 +177,19 @@ const updateUser = async (id, userData) => {
     role: u.role,
     phoneNumber: u.phone_number,
     avatarUrl: u.avatar_url,
-    createdAt: u.created_at
   };
-};
-
-const deleteUser = async (id) => {
-  const userCheck = await db.query('SELECT id FROM users WHERE id = $1', [id]);
-  if (userCheck.rows.length === 0) {
-    throw new AppError('User not found', 404, '01');
-  }
-
-  await db.query('DELETE FROM users WHERE id = $1', [id]);
-  return true;
-};
-
-const getProfile = async (id) => {
-  return getUserById(id);
 };
 
 const updateProfile = async (id, profileData) => {
   const { fullName, phoneNumber, avatarUrl } = profileData;
 
+  if (fullName !== undefined && !fullName) {
+    throw new AppError('fullName tidak boleh kosong', 400, '02');
+  }
+
   const userCheck = await db.query('SELECT id FROM users WHERE id = $1', [id]);
   if (userCheck.rows.length === 0) {
-    throw new AppError('User not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const result = await db.query(
@@ -195,8 +209,7 @@ const updateProfile = async (id, profileData) => {
     email: u.email,
     role: u.role,
     phoneNumber: u.phone_number,
-    avatarUrl: u.avatar_url,
-    createdAt: u.created_at
+    avatarUrl: u.avatar_url
   };
 };
 
@@ -208,7 +221,7 @@ const changePassword = async (id, passwordData) => {
 
   const result = await db.query('SELECT password_hash FROM users WHERE id = $1', [id]);
   if (result.rows.length === 0) {
-    throw new AppError('User not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const user = result.rows[0];

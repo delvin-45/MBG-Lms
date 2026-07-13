@@ -6,7 +6,7 @@ const getAssignmentsByCourse = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Assignments retrieved successfully',
+      message: 'Data tugas berhasil diambil.',
       data
     });
   } catch (error) {
@@ -20,7 +20,7 @@ const createAssignment = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'Assignment created successfully',
+      message: 'Tugas berhasil dibuat.',
       data
     });
   } catch (error) {
@@ -34,7 +34,7 @@ const updateAssignment = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Assignment updated successfully',
+      message: 'Tugas berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -48,7 +48,7 @@ const deleteAssignment = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Assignment deleted successfully'
+      message: 'Tugas berhasil dihapus.'
     });
   } catch (error) {
     next(error);
@@ -63,7 +63,7 @@ const submitAssignment = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'Assignment submitted successfully',
+      message: 'Tugas berhasil dikumpulkan.',
       data
     });
   } catch (error) {
@@ -77,7 +77,7 @@ const getSubmissions = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Submissions retrieved successfully',
+      message: 'Data pengumpulan tugas berhasil diambil.',
       data
     });
   } catch (error) {

@@ -6,7 +6,7 @@ const getAllCourses = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Courses retrieved successfully',
+      message: 'Data course berhasil diambil.',
       data,
       meta
     });
@@ -21,7 +21,7 @@ const getCourseById = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Course retrieved successfully',
+      message: 'Detail course berhasil diambil.',
       data
     });
   } catch (error) {
@@ -39,7 +39,7 @@ const createCourse = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'Course created successfully',
+      message: 'Course berhasil dibuat.',
       data
     });
   } catch (error) {
@@ -57,7 +57,7 @@ const updateCourse = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Course updated successfully',
+      message: 'Course berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -71,7 +71,7 @@ const deleteCourse = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Course deleted successfully'
+      message: 'Course berhasil dihapus.'
     });
   } catch (error) {
     next(error);
@@ -85,7 +85,7 @@ const getMaterials = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Materials retrieved successfully',
+      message: 'Data materi berhasil diambil.',
       data
     });
   } catch (error) {
@@ -103,7 +103,7 @@ const createMaterial = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'Material created successfully',
+      message: 'Materi berhasil ditambahkan.',
       data
     });
   } catch (error) {
@@ -121,7 +121,7 @@ const updateMaterial = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Material updated successfully',
+      message: 'Materi berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -135,7 +135,7 @@ const deleteMaterial = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Material deleted successfully'
+      message: 'Materi berhasil dihapus.'
     });
   } catch (error) {
     next(error);

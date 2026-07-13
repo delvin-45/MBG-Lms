@@ -6,7 +6,7 @@ const register = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'User registered successfully',
+      message: 'Registrasi berhasil, silakan login.',
       data
     });
   } catch (error) {
@@ -20,7 +20,7 @@ const login = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Login successful',
+      message: 'Login berhasil.',
       data
     });
   } catch (error) {
@@ -35,7 +35,7 @@ const refreshToken = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Token refreshed successfully',
+      message: 'Token berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -45,12 +45,12 @@ const refreshToken = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    // req.user is set by the protect middleware
-    await authService.logout(req.user.id);
+    const { refreshToken } = req.body;
+    await authService.logout(req.user.id, refreshToken);
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Logged out successfully'
+      message: 'Logout berhasil.'
     });
   } catch (error) {
     next(error);

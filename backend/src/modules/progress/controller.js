@@ -6,7 +6,7 @@ const getStudentProgress = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Student progress retrieved successfully',
+      message: 'Data progress berhasil diambil.',
       data
     });
   } catch (error) {
@@ -20,7 +20,7 @@ const getCourseProgress = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Course progress retrieved successfully',
+      message: 'Data progress course berhasil diambil.',
       data
     });
   } catch (error) {

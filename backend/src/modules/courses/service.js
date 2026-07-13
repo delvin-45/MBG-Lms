@@ -9,13 +9,18 @@ const getAllCourses = async (query) => {
   const { search, category } = query;
 
   let queryText = `
-    SELECT c.id, c.title, c.description, c.category, c.thumbnail_url, c.teacher_id, c.created_at, u.full_name as teacher_name,
+    SELECT c.id, c.title, c.description, c.category, c.teacher_id, c.created_at, u.full_name as teacher_name,
     COALESCE((
       SELECT COUNT(DISTINCT s.student_id) 
       FROM assignments a 
       JOIN submissions s ON s.assignment_id = a.id 
       WHERE a.course_id = c.id
-    ), 0)::integer AS total_student
+    ), 0)::integer AS total_student,
+    COALESCE((
+      SELECT COUNT(*)
+      FROM materials m
+      WHERE m.course_id = c.id
+    ), 0)::integer AS total_material
     FROM courses c
     JOIN users u ON c.teacher_id = u.id
     WHERE 1=1
@@ -66,9 +71,9 @@ const getAllCourses = async (query) => {
     title: c.title,
     description: c.description,
     category: c.category,
-    thumbnailUrl: c.thumbnail_url,
     teacherId: c.teacher_id,
     teacherName: c.teacher_name,
+    totalMaterial: c.total_material,
     totalStudent: c.total_student,
     createdAt: c.created_at
   }));
@@ -80,21 +85,25 @@ const getAllCourses = async (query) => {
     meta: {
       page,
       limit,
-      total,
-      totalPages
+      totalData: total,
+      totalPage: totalPages
     }
   };
 };
 
 const getCourseById = async (id) => {
   const result = await db.query(
-    `SELECT c.id, c.title, c.description, c.category, c.thumbnail_url, c.teacher_id, c.created_at, u.full_name as teacher_name,
+    `SELECT c.id, c.title, c.description, c.category, u.full_name as teacher_name,
      COALESCE((
-       SELECT COUNT(DISTINCT s.student_id) 
+       SELECT COUNT(*) 
+       FROM materials m 
+       WHERE m.course_id = c.id
+     ), 0)::integer AS total_material,
+     COALESCE((
+       SELECT COUNT(*) 
        FROM assignments a 
-       JOIN submissions s ON s.assignment_id = a.id 
        WHERE a.course_id = c.id
-     ), 0)::integer AS total_student
+     ), 0)::integer AS total_assignment
      FROM courses c
      JOIN users u ON c.teacher_id = u.id
      WHERE c.id = $1`,
@@ -102,7 +111,7 @@ const getCourseById = async (id) => {
   );
 
   if (result.rows.length === 0) {
-    throw new AppError('Course not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const c = result.rows[0];
@@ -111,11 +120,9 @@ const getCourseById = async (id) => {
     title: c.title,
     description: c.description,
     category: c.category,
-    thumbnailUrl: c.thumbnail_url,
-    teacherId: c.teacher_id,
     teacherName: c.teacher_name,
-    totalStudent: c.total_student,
-    createdAt: c.created_at
+    totalMaterial: c.total_material,
+    totalAssignment: c.total_assignment
   };
 };
 
@@ -127,7 +134,7 @@ const createCourse = async (courseData, teacherId) => {
   const result = await db.query(
     `INSERT INTO courses (title, description, category, thumbnail_url, teacher_id)
      VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, title, description, category, thumbnail_url, teacher_id, created_at`,
+     RETURNING id, title, category, teacher_id, created_at`,
     [title, description || null, category || null, thumbnail_url || null, teacherId]
   );
 
@@ -135,9 +142,7 @@ const createCourse = async (courseData, teacherId) => {
   return {
     id: c.id,
     title: c.title,
-    description: c.description,
     category: c.category,
-    thumbnailUrl: c.thumbnail_url,
     teacherId: c.teacher_id,
     createdAt: c.created_at
   };
@@ -148,12 +153,11 @@ const updateCourse = async (id, courseData, teacherId, role) => {
 
   const check = await db.query('SELECT teacher_id FROM courses WHERE id = $1', [id]);
   if (check.rows.length === 0) {
-    throw new AppError('Course not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
-  // Enforce Teacher Owner check (Admins can bypass if needed, but per rules: "hanya teacher pemilik")
   if (check.rows[0].teacher_id !== teacherId && role !== 'admin') {
-    throw new AppError('You do not have permission to update this course', 403, '07');
+    throw new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07');
   }
 
   const result = await db.query(
@@ -163,7 +167,7 @@ const updateCourse = async (id, courseData, teacherId, role) => {
          category = COALESCE($3, category),
          thumbnail_url = COALESCE($4, thumbnail_url)
      WHERE id = $5
-     RETURNING id, title, description, category, thumbnail_url, teacher_id, created_at`,
+     RETURNING id, title, category`,
     [title, description, category, thumbnail_url, id]
   );
 
@@ -171,22 +175,18 @@ const updateCourse = async (id, courseData, teacherId, role) => {
   return {
     id: c.id,
     title: c.title,
-    description: c.description,
-    category: c.category,
-    thumbnailUrl: c.thumbnail_url,
-    teacherId: c.teacher_id,
-    createdAt: c.created_at
+    category: c.category
   };
 };
 
 const deleteCourse = async (id, teacherId, role) => {
   const check = await db.query('SELECT teacher_id FROM courses WHERE id = $1', [id]);
   if (check.rows.length === 0) {
-    throw new AppError('Course not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   if (check.rows[0].teacher_id !== teacherId && role !== 'admin') {
-    throw new AppError('You do not have permission to delete this course', 403, '07');
+    throw new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07');
   }
 
   await db.query('DELETE FROM courses WHERE id = $1', [id]);
@@ -195,14 +195,13 @@ const deleteCourse = async (id, teacherId, role) => {
 
 // Material services
 const getMaterialsByCourse = async (courseId) => {
-  // Verify course exists
   const courseCheck = await db.query('SELECT id FROM courses WHERE id = $1', [courseId]);
   if (courseCheck.rows.length === 0) {
-    throw new AppError('Course not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const result = await db.query(
-    `SELECT id, course_id, title, type, content, description, created_at 
+    `SELECT id, course_id, title, type, content, created_at 
      FROM materials 
      WHERE course_id = $1 
      ORDER BY created_at ASC`,
@@ -215,7 +214,6 @@ const getMaterialsByCourse = async (courseId) => {
     title: m.title,
     type: m.type,
     content: m.content,
-    description: m.description,
     createdAt: m.created_at
   }));
 };
@@ -225,11 +223,11 @@ const createMaterial = async (courseId, materialData, teacherId, role) => {
 
   const courseCheck = await db.query('SELECT teacher_id FROM courses WHERE id = $1', [courseId]);
   if (courseCheck.rows.length === 0) {
-    throw new AppError('Course not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   if (courseCheck.rows[0].teacher_id !== teacherId && role !== 'admin') {
-    throw new AppError('You do not have permission to add materials to this course', 403, '07');
+    throw new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07');
   }
 
   if (!title) throw new AppError('title tidak boleh kosong', 400, '02');
@@ -238,7 +236,7 @@ const createMaterial = async (courseId, materialData, teacherId, role) => {
   const result = await db.query(
     `INSERT INTO materials (course_id, title, type, content, description)
      VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, course_id, title, type, content, description, created_at`,
+     RETURNING id, course_id, title, type, content, created_at`,
     [courseId, title, type, content || null, description || null]
   );
 
@@ -249,7 +247,6 @@ const createMaterial = async (courseId, materialData, teacherId, role) => {
     title: m.title,
     type: m.type,
     content: m.content,
-    description: m.description,
     createdAt: m.created_at
   };
 };
@@ -265,11 +262,11 @@ const updateMaterial = async (id, materialData, teacherId, role) => {
     [id]
   );
   if (check.rows.length === 0) {
-    throw new AppError('Material not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   if (check.rows[0].teacher_id !== teacherId && role !== 'admin') {
-    throw new AppError('You do not have permission to update this material', 403, '07');
+    throw new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07');
   }
 
   const result = await db.query(
@@ -279,19 +276,15 @@ const updateMaterial = async (id, materialData, teacherId, role) => {
          content = COALESCE($3, content),
          description = COALESCE($4, description)
      WHERE id = $5
-     RETURNING id, course_id, title, type, content, description, created_at`,
+     RETURNING id, title, type`,
     [title, type, content, description, id]
   );
 
   const m = result.rows[0];
   return {
     id: m.id,
-    courseId: m.course_id,
     title: m.title,
-    type: m.type,
-    content: m.content,
-    description: m.description,
-    createdAt: m.created_at
+    type: m.type
   };
 };
 
@@ -304,11 +297,11 @@ const deleteMaterial = async (id, teacherId, role) => {
     [id]
   );
   if (check.rows.length === 0) {
-    throw new AppError('Material not found', 404, '01');
+    throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   if (check.rows[0].teacher_id !== teacherId && role !== 'admin') {
-    throw new AppError('You do not have permission to delete this material', 403, '07');
+    throw new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07');
   }
 
   await db.query('DELETE FROM materials WHERE id = $1', [id]);

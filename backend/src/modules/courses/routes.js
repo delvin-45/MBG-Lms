@@ -27,14 +27,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Course endpoints
-courseRouter.get('/', protect, courseController.getAllCourses);
+courseRouter.get('/', protect, restrictTo('student', 'teacher'), courseController.getAllCourses);
 courseRouter.post('/', protect, restrictTo('teacher'), upload.single('thumbnail'), courseController.createCourse);
-courseRouter.get('/:id', protect, courseController.getCourseById);
+courseRouter.get('/:id', protect, restrictTo('student', 'teacher'), courseController.getCourseById);
 courseRouter.put('/:id', protect, restrictTo('teacher'), upload.single('thumbnail'), courseController.updateCourse);
 courseRouter.delete('/:id', protect, restrictTo('teacher'), courseController.deleteCourse);
 
 // Material endpoints relative to courses
-courseRouter.get('/:courseId/materials', protect, courseController.getMaterials);
+courseRouter.get('/:courseId/materials', protect, restrictTo('student', 'teacher'), courseController.getMaterials);
 courseRouter.post('/:courseId/materials', protect, restrictTo('teacher'), upload.single('materialFile'), courseController.createMaterial);
 
 // Standalone Material endpoints

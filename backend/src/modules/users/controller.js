@@ -6,7 +6,7 @@ const getAllUsers = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Users retrieved successfully',
+      message: 'Data pengguna berhasil diambil.',
       data,
       meta
     });
@@ -21,7 +21,7 @@ const getUserById = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'User retrieved successfully',
+      message: 'Data pengguna berhasil diambil.',
       data
     });
   } catch (error) {
@@ -35,7 +35,7 @@ const createUser = async (req, res, next) => {
     res.status(201).json({
       status: 'success',
       code: '00',
-      message: 'User created successfully',
+      message: 'Pengguna baru berhasil ditambahkan.',
       data
     });
   } catch (error) {
@@ -49,7 +49,7 @@ const updateUser = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'User updated successfully',
+      message: 'Data pengguna berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -63,7 +63,7 @@ const deleteUser = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'User deleted successfully'
+      message: 'Pengguna berhasil dihapus.'
     });
   } catch (error) {
     next(error);
@@ -76,7 +76,7 @@ const getProfile = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'User profile retrieved successfully',
+      message: 'Data profil berhasil diambil.',
       data
     });
   } catch (error) {
@@ -94,7 +94,7 @@ const updateProfile = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'User profile updated successfully',
+      message: 'Profil berhasil diperbarui.',
       data
     });
   } catch (error) {
@@ -108,7 +108,7 @@ const changePassword = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Password updated successfully'
+      message: 'Password berhasil diubah.'
     });
   } catch (error) {
     next(error);

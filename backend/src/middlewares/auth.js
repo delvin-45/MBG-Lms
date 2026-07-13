@@ -5,7 +5,7 @@ require('dotenv').config();
 const protect = async (req, res, next) => {
   try {
     let token;
-    
+
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith('Bearer')
@@ -14,15 +14,15 @@ const protect = async (req, res, next) => {
     }
 
     if (!token) {
-      return next(new AppError('Authentication token is required', 401, '06'));
+      return next(new AppError('Token tidak valid atau sudah expired', 401, '06'));
     }
 
     // Verify token
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        return next(new AppError('Token is invalid or has expired', 401, '06'));
+        return next(new AppError('Token tidak valid atau sudah expired', 401, '06'));
       }
-      
+
       req.user = decoded; // decoded contains { id, email, role }
       next();
     });
@@ -35,7 +35,7 @@ const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return next(
-        new AppError('You do not have permission to perform this action', 403, '07')
+        new AppError('Pengguna tidak memiliki akses untuk aksi ini', 403, '07')
       );
     }
     next();
