@@ -1,0 +1,199 @@
+{
+    "metrics": {
+        "data_sent": {
+            "count": 1203091,
+            "rate": 19996.051276703067
+        },
+        "http_req_connecting": {
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0.039788007929515416,
+            "min": 0,
+            "med": 0,
+            "max": 12.682669
+        },
+        "http_req_duration": {
+            "avg": 8.406067412687202,
+            "min": 2.195747,
+            "med": 6.123541,
+            "max": 130.071464,
+            "p(90)": 16.359993400000004,
+            "p(95)": 22.0555123,
+            "thresholds": {
+                "p(95)<500": false,
+                "p(99)<1000": false
+            }
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 5675,
+            "thresholds": {
+                "rate<0.01": false
+            },
+            "value": 0
+        },
+        "http_req_duration{name:courses}": {
+            "p(95)": 29.087382999999985,
+            "avg": 11.771417304194545,
+            "min": 4.476101,
+            "med": 8.696796,
+            "max": 64.493934,
+            "p(90)": 21.884971,
+            "thresholds": {
+                "p(95)<700": false
+            }
+        },
+        "http_req_receiving": {
+            "max": 1.801721,
+            "p(90)": 0.22837420000000003,
+            "p(95)": 0.27147800000000005,
+            "avg": 0.15165811841409743,
+            "min": 0.011701,
+            "med": 0.136609
+        },
+        "vus": {
+            "value": 5,
+            "min": 0,
+            "max": 100
+        },
+        "iteration_duration": {
+            "max": 1074.14062,
+            "p(90)": 1030.3906336,
+            "p(95)": 1037.311645,
+            "avg": 1017.9000805223825,
+            "min": 1007.842838,
+            "med": 1014.552489
+        },
+        "iterations": {
+            "count": 2837,
+            "rate": 47.152540806976866
+        },
+        "http_req_waiting": {
+            "avg": 8.219149026960354,
+            "min": 2.050137,
+            "med": 5.928306,
+            "max": 129.440217,
+            "p(90)": 16.203151000000002,
+            "p(95)": 21.880330600000004
+        },
+        "data_received": {
+            "count": 7394572,
+            "rate": 122901.95910473335
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_reqs": {
+            "count": 5675,
+            "rate": 94.32170217821421
+        },
+        "vus_max": {
+            "value": 100,
+            "min": 100,
+            "max": 100
+        },
+        "http_req_duration{expected_response:true}": {
+            "med": 6.123541,
+            "max": 130.071464,
+            "p(90)": 16.359993400000004,
+            "p(95)": 22.0555123,
+            "avg": 8.406067412687202,
+            "min": 2.195747
+        },
+        "http_req_sending": {
+            "min": 0.0009,
+            "med": 0.023601,
+            "max": 1.374792,
+            "p(90)": 0.0642036,
+            "p(95)": 0.08466600000000003,
+            "avg": 0.03526026731277539
+        },
+        "http_req_blocked": {
+            "p(90)": 0.023402,
+            "p(95)": 0.040003,
+            "avg": 0.05730948017621168,
+            "min": 0.0009,
+            "med": 0.010601,
+            "max": 12.82608
+        },
+        "checks": {
+            "passes": 8513,
+            "fails": 0,
+            "thresholds": {
+                "rate>0.99": false
+            },
+            "value": 1
+        },
+        "http_req_duration{name:health}": {
+            "avg": 4.997832291505112,
+            "min": 2.195747,
+            "med": 4.181386,
+            "max": 37.071092,
+            "p(90)": 7.617898400000001,
+            "p(95)": 10.331377399999992,
+            "thresholds": {
+                "p(95)<300": false
+            }
+        }
+    },
+    "setup_data": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJzdHVkZW50QG1iZy5jb20iLCJyb2xlIjoic3R1ZGVudCIsImlhdCI6MTc4NDQ1NjI4MiwiZXhwIjoxNzg0NDU3MTgyfQ.m4fFdZqX-0SRmadlN8r_sE22kRRKxQtE7M50F-FGVRo"
+    },
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {
+            "setup": {
+                "groups": {},
+                "checks": {
+                        "setup login returns HTTP 200": {
+                            "name": "setup login returns HTTP 200",
+                            "path": "::setup::setup login returns HTTP 200",
+                            "id": "362f5212886d52aaa04621db7c4e8fd2",
+                            "passes": 1,
+                            "fails": 0
+                        },
+                        "setup login returns access token": {
+                            "name": "setup login returns access token",
+                            "path": "::setup::setup login returns access token",
+                            "id": "82d2a254092a0d5b1623be1092b07d0f",
+                            "passes": 1,
+                            "fails": 0
+                        }
+                    },
+                "name": "setup",
+                "path": "::setup",
+                "id": "5c0f8025f7e0b6654089e5b00e950f1a"
+            }
+        },
+        "checks": {
+            "health returns HTTP 200": {
+                "name": "health returns HTTP 200",
+                "path": "::health returns HTTP 200",
+                "id": "7352a72dad7ff5d42126f77c1bf0696f",
+                "passes": 2837,
+                "fails": 0
+            },
+            "courses returns HTTP 200": {
+                "passes": 2837,
+                "fails": 0,
+                "name": "courses returns HTTP 200",
+                "path": "::courses returns HTTP 200",
+                "id": "622bcf3ef1b957499888fa3f22d4dece"
+            },
+            "courses response is JSON": {
+                "id": "8909fdde4e65993cce3071ef0c676321",
+                "passes": 2837,
+                "fails": 0,
+                "name": "courses response is JSON",
+                "path": "::courses response is JSON"
+            }
+        }
+    }
+}

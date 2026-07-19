@@ -1,22 +1,44 @@
-const rateLimit = require('express-rate-limit');
+const rateLimit = require("express-rate-limit");
+
+const parsePositiveInteger = (value, fallback) => {
+  const parsedValue = Number.parseInt(value, 10);
+
+  if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+    return fallback;
+  }
+
+  return parsedValue;
+};
+
+const WINDOW_MS = parsePositiveInteger(
+  process.env.RATE_LIMIT_WINDOW_MS,
+  15 * 60 * 1000
+);
+
+const MAX_REQUESTS = parsePositiveInteger(
+  process.env.RATE_LIMIT_MAX,
+  1000
+);
 
 const apiRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Limit each IP to 1000 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  skip: (req) => {
-    // Skip rate limiting for localhost/development
-    const ip = req.ip || req.connection?.remoteAddress || '';
-    return ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
-  },
-  handler: (req, res, next) => {
-    res.status(429).json({
-      status: 'error',
-      code: '429',
-      message: 'Terlalu banyak permintaan, silakan coba lagi nanti.'
+  windowMs: WINDOW_MS,
+  max: MAX_REQUESTS,
+
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  // Hanya dilewati ketika performance testing
+  // diaktifkan secara eksplisit.
+  skip: () => process.env.PERFORMANCE_TEST_MODE === "true",
+
+  handler: (req, res) => {
+    return res.status(429).json({
+      status: "error",
+      code: "429",
+      message: "Terlalu banyak permintaan, silakan coba lagi nanti.",
+      data: null,
     });
-  }
+  },
 });
 
 module.exports = apiRateLimiter;

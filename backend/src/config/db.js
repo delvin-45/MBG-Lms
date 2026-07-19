@@ -37,18 +37,51 @@ const initDb = async (retries = 5, delay = 2000) => {
 
     // Create users table
     await client.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        full_name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'teacher', 'student')),
-        phone_number VARCHAR(50),
-        avatar_url VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
 
+    role VARCHAR(50) NOT NULL
+      CHECK (role IN ('admin', 'teacher', 'student')),
+
+    status VARCHAR(20) NOT NULL DEFAULT 'active'
+      CHECK (status IN ('active', 'inactive')),
+
+    phone_number VARCHAR(50),
+    avatar_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+// Migration for databases created before the status column existed.
+await client.query(`
+  ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS status VARCHAR(20)
+  NOT NULL DEFAULT 'active';
+`);
+
+await client.query(`
+  UPDATE users
+  SET status = 'active'
+  WHERE status IS NULL;
+`);
+
+await client.query(`
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_constraint
+      WHERE conname = 'users_status_check'
+    ) THEN
+      ALTER TABLE users
+      ADD CONSTRAINT users_status_check
+      CHECK (status IN ('active', 'inactive'));
+    END IF;
+  END
+  $$;
+`);
     // Create courses table
     await client.query(`
       CREATE TABLE IF NOT EXISTS courses (
