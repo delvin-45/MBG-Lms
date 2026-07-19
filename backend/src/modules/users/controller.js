@@ -86,11 +86,7 @@ const getProfile = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
-    const profileData = { ...req.body };
-    if (req.file) {
-      profileData.avatarUrl = `/uploads/${req.file.filename}`;
-    }
-    const data = await userService.updateProfile(req.user.id, profileData);
+    const data = await userService.updateProfile(req.user.id, req.body);
     res.status(200).json({
       status: 'success',
       code: '00',

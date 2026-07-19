@@ -11,6 +11,7 @@ export default function DashboardAdmin() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All Roles");
+  const [statusFilter, setStatusFilter] = useState("Status: All");
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState({ page: 1, limit: 10, totalData: 0, totalPage: 1 });
 
@@ -26,6 +27,7 @@ export default function DashboardAdmin() {
       params.append('limit', 10);
       if (search) params.append('search', search);
       if (roleFilter !== 'All Roles') params.append('role', roleFilter.toLowerCase());
+      if (statusFilter !== 'Status: All') params.append('status', statusFilter.toLowerCase());
 
       const res = await api.get(`/users?${params.toString()}`);
       if (res.status === 'success' && res.data) {
@@ -48,7 +50,7 @@ export default function DashboardAdmin() {
         setTotalUsersCount(resTotal.meta.totalData);
       }
       
-      const resStudent = await api.get('/users?role=student&limit=1');
+      const resStudent = await api.get('/users?role=student&status=active&limit=1');
       if (resStudent.status === 'success' && resStudent.meta) {
         setActiveStudentsCount(resStudent.meta.totalData);
       }
@@ -59,7 +61,7 @@ export default function DashboardAdmin() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, search, roleFilter]);
+  }, [page, search, roleFilter, statusFilter]);
 
   useEffect(() => {
     loadStats();
@@ -94,11 +96,15 @@ export default function DashboardAdmin() {
       <div className="w-full md:w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 min-h-0 md:min-h-screen border-b md:border-b-0 md:border-r border-[#DCC8E033]">
         <div className="flex flex-col gap-1 w-full">
           <div className="h-[71px] px-4 flex items-center gap-3 mb-4 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md">
-              <span className="text-white text-2xl font-black">M</span>
+            <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md overflow-hidden shrink-0">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
+              ) : (
+                <span className="text-white text-2xl font-black">{user?.name ? user.name.charAt(0).toUpperCase() : 'M'}</span>
+              )}
             </div>
-            <div className="flex flex-col">
-              <span className="text-[#E040A0] text-2xl font-black leading-tight">MBG Admin</span>
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title={user?.name || "MBG Admin"}>{user?.name || "MBG Admin"}</span>
             </div>
           </div>
           
@@ -123,19 +129,8 @@ export default function DashboardAdmin() {
       {/* Main Content Area on the Right */}
       <div className="flex flex-col flex-1 min-h-screen">
         {/* Top Navbar */}
-        <div className="py-3 md:h-16 px-4 md:px-6 bg-[#FEF7FF] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col-reverse sm:flex-row justify-between items-center w-full z-10 gap-4">
-          <div className="w-full max-w-[400px] px-4 py-2 bg-[#F2E8F2] rounded-full flex items-center">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="#DCC8E0" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-              <path d="M12.5 11H11.71L11.43 10.73C12.41 9.59 13 8.11 13 6.5C13 2.91 10.09 0 6.5 0C2.91 0 0 2.91 0 6.5C0 10.09 2.91 13 6.5 13C8.11 13 9.59 12.41 10.73 11.43L11 11.71V12.5L16 17.49L17.49 16L12.5 11ZM6.5 11C4.01 11 2 8.99 2 6.5C2 4.01 4.01 2 6.5 2C8.99 2 11 4.01 11 6.5C11 8.99 8.99 11 6.5 11Z"/>
-            </svg>
-            <input
-              type="text"
-              placeholder="Global search..."
-              className="bg-transparent outline-none w-full text-sm text-[#604868] placeholder:text-[#DCC8E0]"
-            />
-          </div>
+        <div className="py-3 md:h-16 px-4 md:px-6 bg-[#FEF7FF] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col-reverse sm:flex-row justify-end items-center w-full z-10 gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-px h-8 bg-[#DCC8E0]"></div>
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
               <div className="flex flex-col items-end">
                 <span className="text-[#2E1A28] text-xs font-bold leading-tight">{user ? user.name : "Mas Wowok"}</span>
@@ -224,9 +219,13 @@ export default function DashboardAdmin() {
                     </svg>
                   </div>
                 </div>
-                {/* Status mock filter */}
+                {/* Status filter */}
                 <div className="relative flex-1 min-w-[140px]">
-                  <select className="appearance-none w-full px-6 py-2.5 bg-[#FBF2FB] rounded-full outline outline-1 outline-[rgba(220,200,224,0.30)] text-sm text-[#604868] cursor-pointer outline-none">
+                  <select 
+                    value={statusFilter}
+                    onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+                    className="appearance-none w-full px-6 py-2.5 bg-[#FBF2FB] rounded-full outline outline-1 outline-[rgba(220,200,224,0.30)] text-sm text-[#604868] cursor-pointer outline-none"
+                  >
                     <option>Status: All</option>
                     <option>Active</option>
                     <option>Inactive</option>

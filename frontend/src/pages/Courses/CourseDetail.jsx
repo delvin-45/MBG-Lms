@@ -19,6 +19,82 @@ export default function CourseDetail() {
 	const [loading, setLoading] = useState(true);
 	const [openModules, setOpenModules] = useState({ 0: true });
 
+	const getCourseImage = (category) => {
+		switch (category?.toLowerCase()) {
+			case 'design': return "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&auto=format&fit=crop&q=60";
+			case 'tech': return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=500&auto=format&fit=crop&q=60";
+			case 'business': return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60";
+			default: return "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=60";
+		}
+	};
+
+	// Material Management States
+	const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+	const [editingMaterialId, setEditingMaterialId] = useState(null);
+	const [matTitle, setMatTitle] = useState('');
+	const [matType, setMatType] = useState('video');
+	const [matDesc, setMatDesc] = useState('');
+	const [matContent, setMatContent] = useState('');
+	const [matFile, setMatFile] = useState(null);
+
+	const openAddMaterial = () => {
+		setEditingMaterialId(null);
+		setMatTitle(''); setMatType('video'); setMatDesc(''); setMatContent(''); setMatFile(null);
+		setIsMaterialModalOpen(true);
+	};
+
+	const openEditMaterial = (e, mat) => {
+		e.stopPropagation();
+		setEditingMaterialId(mat.id);
+		setMatTitle(mat.title); setMatType(mat.type); setMatDesc(mat.description || ''); setMatContent(mat.content || ''); setMatFile(null);
+		setIsMaterialModalOpen(true);
+	};
+
+	const handleSaveMaterial = async (e) => {
+		e.preventDefault();
+		if (!matTitle || !matType) return alert('Title and Type are required');
+		try {
+			const formData = new FormData();
+			formData.append('title', matTitle);
+			formData.append('type', matType);
+			if (matDesc) formData.append('description', matDesc);
+			if (matFile) {
+				formData.append('materialFile', matFile);
+			} else if (matContent) {
+				formData.append('content', matContent);
+			}
+
+			if (editingMaterialId) {
+				const res = await api.put(`/materials/${editingMaterialId}`, formData);
+				if (res.status === 'success') {
+					setMaterials(prev => prev.map(m => m.id === editingMaterialId ? { ...m, ...res.data } : m));
+				}
+			} else {
+				const res = await api.post(`/courses/${courseId}/materials`, formData);
+				if (res.status === 'success' || res.status === 201) {
+					const matList = await api.get(`/courses/${courseId}/materials`);
+					if (matList.status === 'success') {
+						setMaterials(Array.isArray(matList.data) ? matList.data : []);
+					}
+				}
+			}
+			setIsMaterialModalOpen(false);
+		} catch (err) {
+			alert('Failed to save material');
+		}
+	};
+
+	const handleDeleteMaterial = async (e, id) => {
+		e.stopPropagation();
+		if (!window.confirm("Are you sure you want to delete this material?")) return;
+		try {
+			await api.delete(`/materials/${id}`);
+			setMaterials(prev => prev.filter(m => m.id !== id));
+		} catch (err) {
+			alert('Failed to delete material');
+		}
+	};
+
 	// Load course info, materials, and assignments
 	useEffect(() => {
 		if (!courseId) {
@@ -179,42 +255,6 @@ export default function CourseDetail() {
 
 			{/* Main Content Area */}
 			<div className="flex flex-col flex-1 min-h-screen w-full">
-				{/* Top Bar Navbar */}
-				<div className="flex flex-col-reverse sm:flex-row justify-between items-center bg-white py-3 px-4 md:px-8 border-b border-gray-100 gap-4">
-					<span className="text-[#E040A0] text-xl font-bold cursor-pointer hidden sm:block" onClick={() => navigate("/my-courses")}>
-						My Better Grade
-					</span>
-					<div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-						<div className="flex items-center bg-[#FBF2FB] py-2 px-3 gap-2 rounded-full border border-[#DCC8E055] w-full max-w-96">
-							<img
-								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ccrkzlm2_expires_30_days.png"}
-								className="w-[18px] h-6 object-fill"
-								alt="search"
-							/>
-							<input
-								type="text"
-								placeholder="Search lessons..."
-								className="text-gray-700 bg-transparent text-sm w-full outline-none"
-							/>
-						</div>
-
-						{/* Notification Bell */}
-						<button className="relative w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center border-0 text-lg">
-							🔔
-							<span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-[#E040A0] rounded-full border-2 border-white"></span>
-						</button>
-
-						<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
-							<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
-							<img
-								src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
-								className="w-10 h-10 object-cover rounded-full border border-gray-100"
-								alt="avatar"
-							/>
-						</div>
-					</div>
-				</div>
-
 				{/* Course Detail Content Layout */}
 				<div className="flex flex-col flex-1 p-4 md:p-8 gap-8 w-full max-w-[1200px] mx-auto">
 
@@ -242,7 +282,7 @@ export default function CourseDetail() {
 						}}>
 						<div className="absolute inset-0 bg-cover bg-center"
 							style={{
-								backgroundImage: `url(${course?.thumbnailUrl || 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/burfd4f8_expires_30_days.png'})`,
+								backgroundImage: `url(${course?.thumbnail_url || course?.thumbnailUrl || getCourseImage(course?.category) || 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/burfd4f8_expires_30_days.png'})`,
 							}}
 						/>
 						<div className="absolute inset-0 bg-gradient-to-t from-[#2a0815]/90 via-[#4a1d2d]/40 to-transparent"></div>
@@ -285,9 +325,11 @@ export default function CourseDetail() {
 									<span className="bg-[#F3E8FF] text-[#7C52AA] text-[10px] font-bold py-1.5 px-3 rounded-full uppercase tracking-wider">
 										{materials.length} Modules
 									</span>
-									<span className="bg-[#00D4FF] text-white text-[10px] font-bold py-1.5 px-3 rounded-full uppercase tracking-wider">
-										48h Total
-									</span>
+									{user?.role === 'teacher' && (
+										<button onClick={openAddMaterial} className="bg-[#E040A0] text-white text-[10px] font-bold py-1.5 px-4 rounded-full uppercase tracking-wider hover:bg-[#c03080] transition shadow-sm">
+											+ Add Material
+										</button>
+									)}
 								</div>
 							</div>
 
@@ -315,7 +357,19 @@ export default function CourseDetail() {
 															<span className="text-gray-500 text-xs font-semibold">{material.type} • {material.description || '2h 30m'}</span>
 														</div>
 													</div>
-													<svg className={`w-5 h-5 text-gray-400 transform transition ${isOpen ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path></svg>
+													<div className="flex items-center gap-3">
+														{user?.role === 'teacher' && (
+															<div className="flex gap-2">
+																<button onClick={(e) => openEditMaterial(e, material)} className="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-1.5 rounded-full transition" title="Edit Material">
+																	<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+																</button>
+																<button onClick={(e) => handleDeleteMaterial(e, material.id)} className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-full transition" title="Delete Material">
+																	<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+																</button>
+															</div>
+														)}
+														<svg className={`w-5 h-5 text-gray-400 transform transition ${isOpen ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7"></path></svg>
+													</div>
 												</div>
 
 												{isOpen && (
@@ -388,6 +442,65 @@ export default function CourseDetail() {
 					</div>
 				</div>
 			</div>
+
+			{/* Material Modal */}
+			{isMaterialModalOpen && (
+				<div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+					<div className="bg-white rounded-[32px] w-full max-w-[600px] p-8 shadow-2xl relative">
+						<button 
+							type="button"
+							onClick={() => setIsMaterialModalOpen(false)}
+							className="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition"
+						>
+							✕
+						</button>
+						<h2 className="text-2xl font-black text-[#2E1A28] mb-6">{editingMaterialId ? 'Edit Material' : 'Add New Material'}</h2>
+						
+						<form onSubmit={handleSaveMaterial} className="flex flex-col gap-4">
+							<div className="flex flex-col gap-1">
+								<label className="text-xs font-bold text-[#604868] uppercase">Title</label>
+								<input type="text" required value={matTitle} onChange={e => setMatTitle(e.target.value)} className="bg-[#FBF2FB] px-4 py-3 rounded-xl outline-none focus:border-[#E040A0] border border-transparent" placeholder="Material Title" />
+							</div>
+
+							<div className="flex gap-4">
+								<div className="flex flex-col gap-1 flex-1">
+									<label className="text-xs font-bold text-[#604868] uppercase">Type</label>
+									<select value={matType} onChange={e => setMatType(e.target.value)} className="bg-[#FBF2FB] px-4 py-3 rounded-xl outline-none focus:border-[#E040A0] border border-transparent cursor-pointer">
+										<option value="video">Video</option>
+										<option value="document">Document / PDF</option>
+										<option value="quiz">Quiz</option>
+										<option value="link">Link</option>
+									</select>
+								</div>
+							</div>
+
+							<div className="flex flex-col gap-1">
+								<label className="text-xs font-bold text-[#604868] uppercase">Content or File</label>
+								<div className="flex flex-col gap-2">
+									<input type="text" value={matContent} onChange={e => setMatContent(e.target.value)} disabled={!!matFile} placeholder="URL or Text Content" className={`bg-[#FBF2FB] px-4 py-3 rounded-xl outline-none focus:border-[#E040A0] border border-transparent ${matFile ? 'opacity-50' : ''}`} />
+									<div className="text-center text-xs text-gray-400 font-bold">OR</div>
+									<div className="relative border-2 border-dashed border-[#E040A055] bg-[#FFF0F7] rounded-xl p-4 text-center hover:bg-[#FCE6F3] transition cursor-pointer">
+										<input type="file" onChange={e => { if(e.target.files[0]) { setMatFile(e.target.files[0]); setMatContent(''); } }} className="absolute inset-0 opacity-0 cursor-pointer" />
+										<span className="text-[#E040A0] font-bold">{matFile ? matFile.name : 'Upload File (PDF/Doc/MP4)'}</span>
+									</div>
+									{matFile && (
+										<button type="button" onClick={() => setMatFile(null)} className="text-red-500 text-xs font-bold self-start bg-red-50 px-2 py-1 rounded">Remove File</button>
+									)}
+								</div>
+							</div>
+
+							<div className="flex flex-col gap-1">
+								<label className="text-xs font-bold text-[#604868] uppercase">Short Description (Optional)</label>
+								<input type="text" value={matDesc} onChange={e => setMatDesc(e.target.value)} className="bg-[#FBF2FB] px-4 py-3 rounded-xl outline-none focus:border-[#E040A0] border border-transparent" placeholder="E.g. 2h 30m" />
+							</div>
+
+							<button type="submit" className="mt-4 bg-[#E040A0] hover:bg-[#c03080] text-white font-bold py-3.5 rounded-full transition shadow-md">
+								{editingMaterialId ? 'Save Changes' : 'Add Material'}
+							</button>
+						</form>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

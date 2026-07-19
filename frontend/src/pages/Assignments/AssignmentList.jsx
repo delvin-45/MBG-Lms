@@ -126,6 +126,22 @@ export default function AssignmentList() {
 		}
 	};
 
+	const handleDeleteAssignment = async (assignmentId) => {
+		if (window.confirm("Are you sure you want to delete this assignment?")) {
+			try {
+				const res = await api.delete(`/assignments/${assignmentId}`);
+				if (res.status === 'success') {
+					alert("Assignment deleted successfully");
+					loadData();
+				} else {
+					alert(res.message || "Failed to delete assignment");
+				}
+			} catch (err) {
+				alert(err.message || "Failed to delete assignment");
+			}
+		}
+	};
+
 	// Determine filtered assignments for student
 	const getFilteredAssignments = () => {
 		if (user?.role !== 'student') return assignments;
@@ -176,7 +192,7 @@ export default function AssignmentList() {
 	};
 
 	const filteredTasks = getFilteredAssignments();
-	const filteredSubs = getFilteredSubmissions();
+	const filteredSubs = getFilteredSubmissions().sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
 
 	return (
 		<div className="flex bg-white min-h-screen font-sans antialiased text-gray-800">
@@ -414,11 +430,37 @@ export default function AssignmentList() {
 											</div>
 										) : (
 											filteredTasks.map((task) => (
-												<div key={task.id} className="bg-white p-6 rounded-[32px] border border-solid border-[#DCC8E088] shadow-sm hover:shadow-md transition flex flex-col justify-between items-start gap-4 relative overflow-hidden h-full">
+												<div key={task.id} className="group bg-white p-6 rounded-[32px] border border-solid border-[#DCC8E088] shadow-sm hover:shadow-md transition flex flex-col justify-between items-start gap-4 relative overflow-hidden h-full">
 													{/* Colored left bar */}
 													<div className="absolute left-0 top-0 bottom-0 w-2" style={{ backgroundColor: getCourseButtonColor(task.courseCategory) }}></div>
 
-													<div className="flex flex-col items-start gap-3 pl-2 w-full">
+													{/* Actions (Teacher only) */}
+													{isTeacher && (
+														<>
+															<button
+																className="absolute top-4 right-14 bg-blue-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-blue-600 transition-all shadow-md z-10 cursor-pointer"
+																title="Edit Assignment"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	navigate("/add-assignment", { state: { editAssignment: task } });
+																}}
+															>
+																<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+															</button>
+															<button
+																className="absolute top-4 right-4 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all shadow-md z-10 cursor-pointer"
+																title="Delete Assignment"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleDeleteAssignment(task.id);
+																}}
+															>
+																<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+															</button>
+														</>
+													)}
+
+													<div className="flex flex-col items-start gap-3 pl-2 w-full mt-2 md:mt-0">
 														<div className="flex justify-between items-center w-full">
 															<span className={`${getCategoryColors(task.courseCategory)} text-[10px] font-black tracking-widest uppercase py-1 px-3 rounded-full border`}>
 																{task.courseTitle}

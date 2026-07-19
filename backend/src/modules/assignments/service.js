@@ -284,7 +284,7 @@ const getSubmissions = async (assignmentId, teacherId, role) => {
   }
 
   const { rows } = await db.query(
-    `SELECT s.id, s.student_id, u.full_name as student_name, s.file_url, s.score, s.submitted_at
+    `SELECT s.id, s.student_id, u.full_name as student_name, s.file_url, s.score, s.status, s.note, s.submitted_at
      FROM submissions s
      JOIN users u ON s.student_id = u.id
      WHERE s.assignment_id = $1
@@ -304,12 +304,12 @@ const getSubmissions = async (assignmentId, teacherId, role) => {
 
 const gradeSubmission = async (submissionId, score, teacherId, role) => {
   if (score === undefined || score === null) {
-    throw new AppError('Score is required', 400, '02');
+    throw new AppError('score tidak boleh kosong', 400, '02');
   }
 
   const scoreNum = parseInt(score, 10);
   if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
-    throw new AppError('Score must be a number between 0 and 100', 400, '08');
+    throw new AppError('Format nilai tidak valid', 400, '08');
   }
 
   const subCheck = await db.query(
@@ -332,7 +332,7 @@ const gradeSubmission = async (submissionId, score, teacherId, role) => {
   }
 
   if (scoreNum > max_score) {
-    throw new AppError(`Score cannot exceed maximum score of ${max_score}`, 400, '08');
+    throw new AppError(`Nilai melebihi batas maksimum ${max_score}`, 400, '08');
   }
 
   const result = await db.query(

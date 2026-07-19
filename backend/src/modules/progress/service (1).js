@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const register = async (userData) => {
-  const { fullName, email, password, role, phoneNumber } = userData;
+  const { fullName, email, password, role } = userData;
 
   // Validation
   if (!fullName) throw new AppError('fullName tidak boleh kosong', 400, '02');
@@ -37,10 +37,10 @@ const register = async (userData) => {
 
   // Insert user
   const result = await db.query(
-    `INSERT INTO users (full_name, email, password_hash, role, phone_number)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, full_name, email, role, phone_number, created_at`,
-    [fullName, email, passwordHash, role, phoneNumber || null]
+    `INSERT INTO users (full_name, email, password_hash, role)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, full_name, email, role, created_at`,
+    [fullName, email, passwordHash, role]
   );
 
   const newUser = result.rows[0];
@@ -49,7 +49,6 @@ const register = async (userData) => {
     fullName: newUser.full_name,
     email: newUser.email,
     role: newUser.role,
-    phoneNumber: newUser.phone_number,
     createdAt: newUser.created_at
   };
 };
@@ -62,7 +61,7 @@ const login = async (loginData) => {
 
   // Find user
   const result = await db.query(
-    'SELECT id, full_name, email, password_hash, role, avatar_url, phone_number FROM users WHERE email = $1',
+    'SELECT id, full_name, email, password_hash, role, avatar_url FROM users WHERE email = $1',
     [email]
   );
 
@@ -105,8 +104,7 @@ const login = async (loginData) => {
       fullName: user.full_name,
       email: user.email,
       role: user.role,
-      avatarUrl: user.avatar_url,
-      phoneNumber: user.phone_number
+      avatarUrl: user.avatar_url
     }
   };
 };

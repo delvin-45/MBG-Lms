@@ -1,21 +1,25 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCourses } from "../../context/CourseContext";
 
 export default function AddCourse() {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const editCourse = location.state?.editCourse || null;
+	const isEditMode = !!editCourse;
+
 	const { user } = useAuth();
-	const { addCourse, addMaterial } = useCourses();
+	const { addCourse, updateCourse, addMaterial } = useCourses();
 
 	// Form states
-	const [title, setTitle] = useState('');
-	const [category, setCategory] = useState('Design');
+	const [title, setTitle] = useState(editCourse ? editCourse.title : '');
+	const [category, setCategory] = useState(editCourse ? editCourse.category : 'Design');
 	const [tags, setTags] = useState('');
 	const [moduleList, setModuleList] = useState([]);
 	const [duration, setDuration] = useState('48h Total');
-	const [description, setDescription] = useState('');
-	const [thumbnail, setThumbnail] = useState(null); // Preview URL
+	const [description, setDescription] = useState(editCourse ? (editCourse.description || '') : '');
+	const [thumbnail, setThumbnail] = useState(editCourse ? editCourse.image : null); // Preview URL
 	const [thumbnailFile, setThumbnailFile] = useState(null); // Actual File object
 
 	const handlePublish = async (e) => {
@@ -38,36 +42,40 @@ export default function AddCourse() {
 				courseFormData.append('thumbnail', thumbnailFile);
 			}
 
-			const res = await addCourse(courseFormData);
-			const courseId = res?.data?.id;
-			if (!courseId) throw new Error('Failed to get course ID from response');
-			
-			// Save all dynamically added materials
-			for (let i = 0; i < moduleList.length; i++) {
-				const mod = moduleList[i];
+			if (isEditMode) {
+				await updateCourse(editCourse.id, courseFormData);
+				alert("Course updated successfully!");
+			} else {
+				const res = await addCourse(courseFormData);
+				const courseId = res?.data?.id;
+				if (!courseId) throw new Error('Failed to get course ID from response');
 				
-				// Validate: if they provided content or a file, but forgot the title
-				if (!mod.title && (mod.content || mod.file)) {
-					throw new Error(`Module ${i + 1} is missing a title. Please provide a title for the material.`);
-				}
-
-				if (mod.title && mod.type) {
-					const formData = new FormData();
-					formData.append('title', mod.title);
-					formData.append('type', mod.type);
-					if (mod.description) formData.append('description', mod.description);
+				// Save all dynamically added materials
+				for (let i = 0; i < moduleList.length; i++) {
+					const mod = moduleList[i];
 					
-					if (mod.file) {
-						formData.append('materialFile', mod.file);
-					} else if (mod.content) {
-						formData.append('content', mod.content);
+					// Validate: if they provided content or a file, but forgot the title
+					if (!mod.title && (mod.content || mod.file)) {
+						throw new Error(`Module ${i + 1} is missing a title. Please provide a title for the material.`);
 					}
 
-					await addMaterial(courseId, formData);
-				}
-			}
+					if (mod.title && mod.type) {
+						const formData = new FormData();
+						formData.append('title', mod.title);
+						formData.append('type', mod.type);
+						if (mod.description) formData.append('description', mod.description);
+						
+						if (mod.file) {
+							formData.append('materialFile', mod.file);
+						} else if (mod.content) {
+							formData.append('content', mod.content);
+						}
 
-			alert("Course published successfully!");
+						await addMaterial(courseId, formData);
+					}
+				}
+				alert("Course published successfully!");
+			}
 			navigate("/my-courses");
 		} catch (err) {
 			alert(err.message || "Failed to publish course");
@@ -92,10 +100,10 @@ export default function AddCourse() {
 						</button>
 						<div className="flex flex-col">
 							<h1 className="text-[#E040A0] text-2xl font-black leading-7">
-								Create New Course
+								{isEditMode ? "Edit Course" : "Create New Course"}
 							</h1>
 							<p className="text-gray-400 text-xs mt-0.5">
-								Design and publish your learning experience
+								{isEditMode ? "Update your learning experience" : "Design and publish your learning experience"}
 							</p>
 						</div>
 					</div>
@@ -203,122 +211,124 @@ export default function AddCourse() {
 						</div>
 
 						{/* Learning Modules */}
-						<div className="flex flex-col gap-4 mt-2">
-							<div className="flex items-center justify-between">
-								<label className="text-[#604868] text-xs font-bold uppercase tracking-wider ml-1">Learning Modules</label>
-								<button 
-									type="button" 
-									onClick={() => setModuleList([...moduleList, { title: '', type: 'video', content: '', description: '', file: null }])}
-									className="text-[#E040A0] text-sm font-bold bg-[#FBF2FB] px-4 py-1.5 rounded-full hover:bg-[#F2E0F2] transition"
-								>
-									+ Add Module
-								</button>
-							</div>
-							
-							{moduleList.length === 0 && (
-								<div className="text-center py-6 bg-[#FBF2FB] rounded-[20px] text-gray-400 text-sm italic border border-dashed border-[#DCC8E0]">
-									No modules added yet. Click "+ Add Module" to start.
-								</div>
-							)}
-
-							{moduleList.map((mod, index) => (
-								<div key={index} className="flex flex-col gap-2 p-3 bg-white rounded-[16px] border border-[#DCC8E0] relative shadow-sm">
+						{!isEditMode && (
+							<div className="flex flex-col gap-4 mt-2">
+								<div className="flex items-center justify-between">
+									<label className="text-[#604868] text-xs font-bold uppercase tracking-wider ml-1">Learning Modules</label>
 									<button 
-										type="button"
-										onClick={() => setModuleList(moduleList.filter((_, i) => i !== index))}
-										className="absolute top-2 right-3 text-gray-400 hover:text-red-500 font-bold text-xs"
+										type="button" 
+										onClick={() => setModuleList([...moduleList, { title: '', type: 'video', content: '', description: '', file: null }])}
+										className="text-[#E040A0] text-sm font-bold bg-[#FBF2FB] px-4 py-1.5 rounded-full hover:bg-[#F2E0F2] transition"
 									>
-										✕
+										+ Add Module
 									</button>
-									
-									<div className="flex gap-2 pr-4">
-										<div className="flex-1">
+								</div>
+								
+								{moduleList.length === 0 && (
+									<div className="text-center py-6 bg-[#FBF2FB] rounded-[20px] text-gray-400 text-sm italic border border-dashed border-[#DCC8E0]">
+										No modules added yet. Click "+ Add Module" to start.
+									</div>
+								)}
+
+								{moduleList.map((mod, index) => (
+									<div key={index} className="flex flex-col gap-2 p-3 bg-white rounded-[16px] border border-[#DCC8E0] relative shadow-sm">
+										<button 
+											type="button"
+											onClick={() => setModuleList(moduleList.filter((_, i) => i !== index))}
+											className="absolute top-2 right-3 text-gray-400 hover:text-red-500 font-bold text-xs"
+										>
+											✕
+										</button>
+										
+										<div className="flex gap-2 pr-4">
+											<div className="flex-1">
+												<input
+													type="text"
+													placeholder={`Module ${index + 1} Title`}
+													value={mod.title}
+													onChange={(e) => {
+														const newList = [...moduleList];
+														newList[index].title = e.target.value;
+														setModuleList(newList);
+													}}
+													className="bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent"
+												/>
+											</div>
+											<div className="w-24">
+												<select
+													value={mod.type}
+													onChange={(e) => {
+														const newList = [...moduleList];
+														newList[index].type = e.target.value;
+														setModuleList(newList);
+													}}
+													className="bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent appearance-none cursor-pointer"
+												>
+													<option value="video">Video</option>
+													<option value="document">Doc</option>
+													<option value="quiz">Quiz</option>
+												</select>
+											</div>
+										</div>
+										
+										<div className="flex flex-col gap-2">
+											<div className="flex gap-2">
+												<input
+													type="text"
+													placeholder="Content URL or Text"
+													value={mod.content}
+													onChange={(e) => {
+														const newList = [...moduleList];
+														newList[index].content = e.target.value;
+														setModuleList(newList);
+													}}
+													disabled={!!mod.file}
+													className={`bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent ${mod.file ? 'opacity-50 cursor-not-allowed' : ''}`}
+												/>
+												
+												<div className="relative shrink-0 flex items-center justify-center bg-purple-50 hover:bg-purple-100 text-[#7C52AA] border border-purple-200 text-xs font-bold py-2 px-4 rounded-md transition cursor-pointer overflow-hidden">
+													<span className="truncate max-w-[150px]">{mod.file ? mod.file.name : 'Upload File 📁'}</span>
+													<input
+														type="file"
+														onChange={(e) => {
+															if (e.target.files && e.target.files[0]) {
+																const newList = [...moduleList];
+																newList[index].file = e.target.files[0];
+																newList[index].content = '';
+																setModuleList(newList);
+															}
+														}}
+														className="absolute inset-0 opacity-0 cursor-pointer"
+													/>
+												</div>
+												{mod.file && (
+													<button
+														type="button"
+														onClick={() => {
+															const newList = [...moduleList];
+															newList[index].file = null;
+															setModuleList(newList);
+														}}
+														className="shrink-0 text-red-500 font-bold px-3 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition"
+													>✕</button>
+												)}
+											</div>
 											<input
 												type="text"
-												placeholder={`Module ${index + 1} Title`}
-												value={mod.title}
+												placeholder="Short Description (Optional)"
+												value={mod.description}
 												onChange={(e) => {
 													const newList = [...moduleList];
-													newList[index].title = e.target.value;
+													newList[index].description = e.target.value;
 													setModuleList(newList);
 												}}
 												className="bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent"
 											/>
 										</div>
-										<div className="w-24">
-											<select
-												value={mod.type}
-												onChange={(e) => {
-													const newList = [...moduleList];
-													newList[index].type = e.target.value;
-													setModuleList(newList);
-												}}
-												className="bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent appearance-none cursor-pointer"
-											>
-												<option value="video">Video</option>
-												<option value="document">Doc</option>
-												<option value="quiz">Quiz</option>
-											</select>
-										</div>
 									</div>
-									
-									<div className="flex flex-col gap-2">
-										<div className="flex gap-2">
-											<input
-												type="text"
-												placeholder="Content URL or Text"
-												value={mod.content}
-												onChange={(e) => {
-													const newList = [...moduleList];
-													newList[index].content = e.target.value;
-													setModuleList(newList);
-												}}
-												disabled={!!mod.file}
-												className={`bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent ${mod.file ? 'opacity-50 cursor-not-allowed' : ''}`}
-											/>
-											
-											<div className="relative shrink-0 flex items-center justify-center bg-purple-50 hover:bg-purple-100 text-[#7C52AA] border border-purple-200 text-xs font-bold py-2 px-4 rounded-md transition cursor-pointer overflow-hidden">
-												<span className="truncate max-w-[150px]">{mod.file ? mod.file.name : 'Upload File 📁'}</span>
-												<input
-													type="file"
-													onChange={(e) => {
-														if (e.target.files && e.target.files[0]) {
-															const newList = [...moduleList];
-															newList[index].file = e.target.files[0];
-															newList[index].content = '';
-															setModuleList(newList);
-														}
-													}}
-													className="absolute inset-0 opacity-0 cursor-pointer"
-												/>
-											</div>
-											{mod.file && (
-												<button
-													type="button"
-													onClick={() => {
-														const newList = [...moduleList];
-														newList[index].file = null;
-														setModuleList(newList);
-													}}
-													className="shrink-0 text-red-500 font-bold px-3 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition"
-												>✕</button>
-											)}
-										</div>
-										<input
-											type="text"
-											placeholder="Short Description (Optional)"
-											value={mod.description}
-											onChange={(e) => {
-												const newList = [...moduleList];
-												newList[index].description = e.target.value;
-												setModuleList(newList);
-											}}
-											className="bg-[#FBF2FB] text-gray-800 text-xs py-2 px-3 rounded-md w-full outline-none focus:border-[#E040A0] border border-transparent"
-										/>
-									</div>
-								</div>
-							))}
-						</div>
+								))}
+							</div>
+						)}
 
 						{/* Thumbnail Upload */}
 						<div className="flex flex-col gap-2">
@@ -409,7 +419,7 @@ export default function AddCourse() {
 						className="flex justify-center items-center gap-2 py-3 px-10 rounded-full bg-[#E040A0] hover:bg-[#c03080] text-white font-bold text-base shadow-[0_4px_16px_rgba(224,64,160,0.15)] border-0 transition w-full sm:w-auto"
 					>
 						<span>🚀</span>
-						<span>Publish Course</span>
+						<span>{isEditMode ? "Save Changes" : "Publish Course"}</span>
 					</button>
 				</div>
 			</div>

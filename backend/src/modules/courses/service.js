@@ -1,8 +1,19 @@
 const db = require('../../config/db');
 const { AppError } = require('../../middlewares/errorHandler');
+const { getCached, setCache, delCache, clearPattern } = require('../../middlewares/cache');
 
-// Course services
+// ─── Cache Key Helpers ──────────────────────────────────────────────────────
+const coursesKey = (query) => `cache:courses:${JSON.stringify(query)}`;
+const courseKey  = (id)    => `cache:course:${id}`;
+const matsKey    = (cId)   => `cache:materials:${cId}`;
+
+// ─── Course Services ────────────────────────────────────────────────────────
+
 const getAllCourses = async (query) => {
+  const cKey = coursesKey(query);
+  const cached = await getCached(cKey);
+  if (cached) return cached;
+
   const page = parseInt(query.page, 10) || 1;
   const limit = parseInt(query.limit, 10) || 10;
   const offset = (page - 1) * limit;
@@ -11,9 +22,9 @@ const getAllCourses = async (query) => {
   let queryText = `
     SELECT c.id, c.title, c.description, c.category, c.teacher_id, c.created_at, u.full_name as teacher_name,
     COALESCE((
-      SELECT COUNT(DISTINCT s.student_id) 
-      FROM assignments a 
-      JOIN submissions s ON s.assignment_id = a.id 
+      SELECT COUNT(DISTINCT s.student_id)
+      FROM assignments a
+      JOIN submissions s ON s.assignment_id = a.id
       WHERE a.course_id = c.id
     ), 0)::integer AS total_student,
     COALESCE((
@@ -44,13 +55,11 @@ const getAllCourses = async (query) => {
   let countQueryText = 'SELECT COUNT(*) FROM courses c WHERE 1=1';
   const countQueryParams = [];
   let countParamCount = 1;
-
   if (category) {
     countQueryText += ` AND c.category = $${countParamCount}`;
     countQueryParams.push(category);
     countParamCount++;
   }
-
   if (search) {
     countQueryText += ` AND (c.title ILIKE $${countParamCount} OR c.description ILIKE $${countParamCount})`;
     countQueryParams.push(`%${search}%`);
@@ -60,7 +69,6 @@ const getAllCourses = async (query) => {
   const countResult = await db.query(countQueryText, countQueryParams);
   const total = parseInt(countResult.rows[0].count, 10);
 
-  // Add sorting and pagination limit
   queryText += ` ORDER BY c.created_at DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
   queryParams.push(limit, offset);
 
@@ -80,28 +88,30 @@ const getAllCourses = async (query) => {
 
   const totalPages = Math.ceil(total / limit);
 
-  return {
+  const result = {
     data,
-    meta: {
-      page,
-      limit,
-      totalData: total,
-      totalPage: totalPages
-    }
+    meta: { page, limit, totalData: total, totalPage: totalPages }
   };
+
+  await setCache(cKey, result);
+  return result;
 };
 
 const getCourseById = async (id) => {
+  const cKey = courseKey(id);
+  const cached = await getCached(cKey);
+  if (cached) return cached;
+
   const result = await db.query(
     `SELECT c.id, c.title, c.description, c.category, u.full_name as teacher_name,
      COALESCE((
-       SELECT COUNT(*) 
-       FROM materials m 
+       SELECT COUNT(*)
+       FROM materials m
        WHERE m.course_id = c.id
      ), 0)::integer AS total_material,
      COALESCE((
-       SELECT COUNT(*) 
-       FROM assignments a 
+       SELECT COUNT(*)
+       FROM assignments a
        WHERE a.course_id = c.id
      ), 0)::integer AS total_assignment
      FROM courses c
@@ -115,7 +125,7 @@ const getCourseById = async (id) => {
   }
 
   const c = result.rows[0];
-  return {
+  const data = {
     id: c.id,
     title: c.title,
     description: c.description,
@@ -124,19 +134,25 @@ const getCourseById = async (id) => {
     totalMaterial: c.total_material,
     totalAssignment: c.total_assignment
   };
+
+  await setCache(cKey, data);
+  return data;
 };
 
 const createCourse = async (courseData, teacherId) => {
-  const { title, description, category, thumbnail_url } = courseData;
+  const { title, description, category } = courseData;
 
   if (!title) throw new AppError('title tidak boleh kosong', 400, '02');
 
   const result = await db.query(
-    `INSERT INTO courses (title, description, category, thumbnail_url, teacher_id)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO courses (title, description, category, teacher_id)
+     VALUES ($1, $2, $3, $4)
      RETURNING id, title, category, teacher_id, created_at`,
-    [title, description || null, category || null, thumbnail_url || null, teacherId]
+    [title, description || null, category || null, teacherId]
   );
+
+  // Invalidate course list caches
+  await clearPattern('cache:courses:*');
 
   const c = result.rows[0];
   return {
@@ -149,7 +165,7 @@ const createCourse = async (courseData, teacherId) => {
 };
 
 const updateCourse = async (id, courseData, teacherId, role) => {
-  const { title, description, category, thumbnail_url } = courseData;
+  const { title, description, category } = courseData;
 
   const check = await db.query('SELECT teacher_id FROM courses WHERE id = $1', [id]);
   if (check.rows.length === 0) {
@@ -164,12 +180,17 @@ const updateCourse = async (id, courseData, teacherId, role) => {
     `UPDATE courses
      SET title = COALESCE($1, title),
          description = COALESCE($2, description),
-         category = COALESCE($3, category),
-         thumbnail_url = COALESCE($4, thumbnail_url)
-     WHERE id = $5
+         category = COALESCE($3, category)
+     WHERE id = $4
      RETURNING id, title, category`,
-    [title, description, category, thumbnail_url, id]
+    [title, description, category, id]
   );
+
+  // Invalidate both this course's cache and all course list caches
+  await Promise.all([
+    delCache(courseKey(id)),
+    clearPattern('cache:courses:*')
+  ]);
 
   const c = result.rows[0];
   return {
@@ -190,25 +211,37 @@ const deleteCourse = async (id, teacherId, role) => {
   }
 
   await db.query('DELETE FROM courses WHERE id = $1', [id]);
+
+  // Invalidate all related caches
+  await Promise.all([
+    delCache(courseKey(id)),
+    clearPattern('cache:courses:*')
+  ]);
+
   return true;
 };
 
-// Material services
+// ─── Material Services ───────────────────────────────────────────────────────
+
 const getMaterialsByCourse = async (courseId) => {
+  const cKey = matsKey(courseId);
+  const cached = await getCached(cKey);
+  if (cached) return cached;
+
   const courseCheck = await db.query('SELECT id FROM courses WHERE id = $1', [courseId]);
   if (courseCheck.rows.length === 0) {
     throw new AppError('Data tidak ditemukan', 404, '01');
   }
 
   const result = await db.query(
-    `SELECT id, course_id, title, type, content, created_at 
-     FROM materials 
-     WHERE course_id = $1 
+    `SELECT id, course_id, title, type, content, created_at
+     FROM materials
+     WHERE course_id = $1
      ORDER BY created_at ASC`,
     [courseId]
   );
 
-  return result.rows.map(m => ({
+  const data = result.rows.map(m => ({
     id: m.id,
     courseId: m.course_id,
     title: m.title,
@@ -216,6 +249,9 @@ const getMaterialsByCourse = async (courseId) => {
     content: m.content,
     createdAt: m.created_at
   }));
+
+  await setCache(cKey, data);
+  return data;
 };
 
 const createMaterial = async (courseId, materialData, teacherId, role) => {
@@ -240,6 +276,8 @@ const createMaterial = async (courseId, materialData, teacherId, role) => {
     [courseId, title, type, content || null, description || null]
   );
 
+  await delCache(matsKey(courseId));
+
   const m = result.rows[0];
   return {
     id: m.id,
@@ -255,7 +293,7 @@ const updateMaterial = async (id, materialData, teacherId, role) => {
   const { title, type, content, description } = materialData;
 
   const check = await db.query(
-    `SELECT m.id, c.teacher_id 
+    `SELECT m.id, m.course_id, c.teacher_id
      FROM materials m
      JOIN courses c ON m.course_id = c.id
      WHERE m.id = $1`,
@@ -280,6 +318,8 @@ const updateMaterial = async (id, materialData, teacherId, role) => {
     [title, type, content, description, id]
   );
 
+  await delCache(matsKey(check.rows[0].course_id));
+
   const m = result.rows[0];
   return {
     id: m.id,
@@ -290,7 +330,7 @@ const updateMaterial = async (id, materialData, teacherId, role) => {
 
 const deleteMaterial = async (id, teacherId, role) => {
   const check = await db.query(
-    `SELECT m.id, c.teacher_id 
+    `SELECT m.id, m.course_id, c.teacher_id
      FROM materials m
      JOIN courses c ON m.course_id = c.id
      WHERE m.id = $1`,
@@ -305,6 +345,7 @@ const deleteMaterial = async (id, teacherId, role) => {
   }
 
   await db.query('DELETE FROM materials WHERE id = $1', [id]);
+  await delCache(matsKey(check.rows[0].course_id));
   return true;
 };
 

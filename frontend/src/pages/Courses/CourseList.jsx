@@ -70,7 +70,7 @@ export default function CourseList() {
 			hours: 12, // mock visual count
 			progress: progressVal,
 			rating: 4.8,
-			image: c.thumbnailUrl || getCourseImage(c.category),
+			image: c.thumbnail_url || c.thumbnailUrl || getCourseImage(c.category),
 			btnText: user?.role === 'student' ? 'Resume Learning' : 'Manage Course',
 			color: getCourseColor(c.category)
 		};
@@ -166,32 +166,6 @@ export default function CourseList() {
 
 			{/* Main Content Area on the Right */}
 			<div className="flex flex-col flex-1 min-h-screen">
-				{/* Top Nav */}
-				<div className="flex flex-col-reverse sm:flex-row justify-between items-center bg-[#FEF7FFCC] py-3 px-4 md:px-8 border-b border-[#DCC8E033] gap-4">
-					<div className="flex items-center bg-white py-2 px-3 gap-2 rounded-full border border-[#DCC8E055] w-full max-w-96">
-						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ccrkzlm2_expires_30_days.png"}
-							className="w-[18px] h-6 object-fill"
-							alt="search"
-						/>
-						<input
-							type="text"
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							placeholder="Search lessons..."
-							className="text-gray-700 bg-transparent text-sm w-full outline-none"
-						/>
-					</div>
-					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
-						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
-						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
-							className="w-10 h-10 object-cover rounded-full border border-gray-100"
-							alt="avatar"
-						/>
-					</div>
-				</div>
-
 				{/* Actual Page Courses Content */}
 				<div className="flex flex-col flex-1 p-4 md:p-8 gap-8 max-w-[1200px] w-full mx-auto">
 
@@ -278,24 +252,38 @@ export default function CourseList() {
 										★ {course.rating}
 									</span>
 
-									{/* Delete Button (Teacher only) */}
+									{/* Actions (Teacher only) */}
 									{isTeacher && (
-										<button
-											className="absolute top-4 right-4 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all shadow-md z-10"
-											title="Delete Course"
-											onClick={async (e) => {
-												e.stopPropagation();
-												if (window.confirm("Are you sure you want to delete this course?")) {
-													try {
-														await deleteCourse(course.id);
-													} catch (err) {
-														alert("Failed to delete course.");
+										<>
+											{/* Edit Button */}
+											<button
+												className="absolute top-4 right-14 bg-blue-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-blue-600 transition-all shadow-md z-10"
+												title="Edit Course"
+												onClick={(e) => {
+													e.stopPropagation();
+													navigate("/add-course", { state: { editCourse: course } });
+												}}
+											>
+												<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+											</button>
+											{/* Delete Button */}
+											<button
+												className="absolute top-4 right-4 bg-red-500/90 text-white w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all shadow-md z-10"
+												title="Delete Course"
+												onClick={async (e) => {
+													e.stopPropagation();
+													if (window.confirm("Are you sure you want to delete this course?")) {
+														try {
+															await deleteCourse(course.id);
+														} catch (err) {
+															alert("Failed to delete course.");
+														}
 													}
-												}
-											}}
-										>
-											✕
-										</button>
+												}}
+											>
+												✕
+											</button>
+										</>
 									)}
 								</div>
 

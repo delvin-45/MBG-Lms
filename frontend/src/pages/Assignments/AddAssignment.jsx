@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { api } from "../../services/api";
 
 export default function AddAssignment() {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { user } = useAuth();
+	
+	const editAssignment = location.state?.editAssignment;
 
 	// Form states
 	const [coursesList, setCoursesList] = useState([]);
@@ -23,13 +26,28 @@ export default function AddAssignment() {
 					const list = Array.isArray(res.data) ? res.data : (res.data.data || []);
 					const teacherCourses = list.filter(c => c.teacherId === user?.id || user?.role === 'admin');
 					setCoursesList(teacherCourses);
-					if (teacherCourses.length > 0) {
+					if (teacherCourses.length > 0 && !editAssignment) {
 						setSelectedCourseId(teacherCourses[0].id);
 					}
 				}
 			})
 			.catch(err => console.error("Failed to load teacher's courses:", err));
-	}, [user]);
+	}, [user, editAssignment]);
+
+	useEffect(() => {
+		if (editAssignment) {
+			setTitle(editAssignment.title || '');
+			setDescription(editAssignment.description || '');
+			setPoints(editAssignment.maxScore || 100);
+			setSelectedCourseId(editAssignment.courseId || '');
+			if (editAssignment.deadline) {
+				const d = new Date(editAssignment.deadline);
+				const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+				const localISOTime = (new Date(d - tzoffset)).toISOString().slice(0, 16);
+				setDueDate(localISOTime);
+			}
+		}
+	}, [editAssignment]);
 
 	const handlePublish = async (e) => {
 		e.preventDefault();
@@ -51,20 +69,31 @@ export default function AddAssignment() {
 			// Convert local datetime input (YYYY-MM-DDTHH:mm) to ISO format
 			const deadlineISO = new Date(dueDate).toISOString();
 			
-			const res = await api.post(`/courses/${selectedCourseId}/assignments`, {
-				title,
-				description,
-				deadline: deadlineISO,
-				maxScore: points
-			});
+			let res;
+			if (editAssignment) {
+				res = await api.put(`/assignments/${editAssignment.id}`, {
+					title,
+					description,
+					deadline: deadlineISO,
+					maxScore: points
+				});
+			} else {
+				res = await api.post(`/courses/${selectedCourseId}/assignments`, {
+					title,
+					description,
+					deadline: deadlineISO,
+					maxScore: points
+				});
+			}
+
 			if (res.status === 'success') {
-				alert(`Assignment "${title}" published successfully!`);
+				alert(`Assignment "${title}" ${editAssignment ? 'updated' : 'published'} successfully!`);
 				navigate("/assignments");
 			} else {
-				setError(res.message || "Failed to publish assignment");
+				setError(res.message || `Failed to ${editAssignment ? 'update' : 'publish'} assignment`);
 			}
 		} catch (err) {
-			setError(err.message || "Failed to publish assignment");
+			setError(err.message || `Failed to ${editAssignment ? 'update' : 'publish'} assignment`);
 		}
 	};
 
@@ -91,10 +120,10 @@ export default function AddAssignment() {
 						</button>
 						<div className="flex flex-col">
 							<h1 className="text-[#E040A0] text-2xl font-black leading-7">
-								Create New Assignment
+								{editAssignment ? 'Edit Assignment' : 'Create New Assignment'}
 							</h1>
 							<p className="text-gray-400 text-xs mt-0.5">
-								Design and publish your class tasks & quizzes
+								{editAssignment ? 'Modify your existing class task' : 'Design and publish your class tasks & quizzes'}
 							</p>
 						</div>
 					</div>
@@ -138,7 +167,8 @@ export default function AddAssignment() {
 							<select
 								value={selectedCourseId}
 								onChange={(e) => setSelectedCourseId(e.target.value)}
-								className="text-gray-800 bg-[#FBF2FB] text-base py-4 px-6 rounded-full border border-transparent w-full outline-none focus:border-[#E040A0] transition appearance-none cursor-pointer font-bold"
+								disabled={!!editAssignment}
+								className={`text-gray-800 bg-[#FBF2FB] text-base py-4 px-6 rounded-full border border-transparent w-full outline-none focus:border-[#E040A0] transition font-bold ${editAssignment ? 'opacity-70 cursor-not-allowed' : 'appearance-none cursor-pointer'}`}
 							>
 								{coursesList.map((course) => (
 									<option key={course.id} value={course.id}>
@@ -260,7 +290,7 @@ export default function AddAssignment() {
 						className="flex items-center gap-2 py-3 px-10 rounded-full bg-[#E040A0] hover:bg-[#c03080] text-white font-bold text-base shadow-[04px16px0rgba(224,64,160,0.15)] border-0 transition cursor-pointer"
 					>
 						<span>🚀</span>
-						<span>Publish Assignment</span>
+						<span>{editAssignment ? 'Update Assignment' : 'Publish Assignment'}</span>
 					</button>
 				</div>
 			</div>

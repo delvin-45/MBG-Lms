@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { AppError } = require('./errorHandler');
+const db = require('../config/db');
 require('dotenv').config();
 
 const protect = async (req, res, next) => {
@@ -18,14 +19,21 @@ const protect = async (req, res, next) => {
     }
 
     // Verify token
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return next(new AppError('Token tidak valid atau sudah expired', 401, '06'));
-      }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Check if user still exists and is not inactive
+    const userResult = await db.query('SELECT id, email, role, status FROM users WHERE id = $1', [decoded.id]);
+    if (userResult.rows.length === 0) {
+      return next(new AppError('Token tidak valid (User tidak ditemukan)', 401, '06'));
+    }
+    
+    const user = userResult.rows[0];
+    if (user.status === 'inactive') {
+      return next(new AppError('Akun dinonaktifkan, silakan hubungi admin', 403, '08'));
+    }
 
-      req.user = decoded; // decoded contains { id, email, role }
-      next();
-    });
+    req.user = decoded; // decoded contains { id, email, role }
+    next();
   } catch (error) {
     next(error);
   }

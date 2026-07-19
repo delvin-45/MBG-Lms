@@ -4,6 +4,9 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  max: 20,                   // match k6 VU count for stress tests
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000
 });
 
 pool.on('connect', () => {
@@ -97,6 +100,17 @@ const initDb = async (retries = 5, delay = 2000) => {
         status VARCHAR(50) NOT NULL DEFAULT 'submitted',
         submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Performance: strategic indexes for JOIN-heavy queries
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_courses_teacher_id        ON courses(teacher_id);
+      CREATE INDEX IF NOT EXISTS idx_courses_category          ON courses(category);
+      CREATE INDEX IF NOT EXISTS idx_materials_course_id       ON materials(course_id);
+      CREATE INDEX IF NOT EXISTS idx_assignments_course_id     ON assignments(course_id);
+      CREATE INDEX IF NOT EXISTS idx_submissions_assignment_id ON submissions(assignment_id);
+      CREATE INDEX IF NOT EXISTS idx_submissions_student_id    ON submissions(student_id);
+      CREATE INDEX IF NOT EXISTS idx_submissions_student_assign ON submissions(student_id, assignment_id);
     `);
 
     // Seed default users if empty

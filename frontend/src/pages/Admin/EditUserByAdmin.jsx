@@ -12,8 +12,8 @@ export default function EditUserByAdmin() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
-  const [department, setDepartment] = useState('');
   const [status, setStatus] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -26,8 +26,8 @@ export default function EditUserByAdmin() {
           setFullName(u.fullName || '');
           setEmail(u.email || '');
           setRole(u.role || '');
-          setDepartment(u.department || '');
           setStatus(u.status || 'active');
+          setAvatarPreview(u.avatarUrl || null);
         } else {
           setError("Failed to fetch user data.");
         }
@@ -43,8 +43,8 @@ export default function EditUserByAdmin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!fullName || !email || !role || !department) {
-      setError("Please fill in all required fields (Full Name, Email, Role, Department).");
+    if (!fullName || !email || !role) {
+      setError("Please fill in all required fields (Full Name, Email, Role).");
       return;
     }
     
@@ -53,8 +53,8 @@ export default function EditUserByAdmin() {
         fullName,
         email,
         role,
-        department,
         status,
+        avatarUrl: avatarPreview || null,
       });
       if (response.status === 'success') {
         alert(`User ${fullName} updated successfully!`);
@@ -64,6 +64,25 @@ export default function EditUserByAdmin() {
       }
     } catch (err) {
       setError(err.message || "Failed to update user.");
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError('Ukuran gambar tidak boleh melebihi 2MB.');
+        return;
+      }
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        setError('Format gambar harus JPG atau PNG.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -81,11 +100,15 @@ export default function EditUserByAdmin() {
       <div className="w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 min-h-screen border-r border-[#DCC8E033]">
         <div className="flex flex-col gap-1 w-full">
           <div className="h-[71px] px-4 flex items-center gap-3 mb-4 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md">
-              <span className="text-white text-2xl font-black">M</span>
+            <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md overflow-hidden shrink-0">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
+              ) : (
+                <span className="text-white text-2xl font-black">{user?.name ? user.name.charAt(0).toUpperCase() : 'M'}</span>
+              )}
             </div>
-            <div className="flex flex-col">
-              <span className="text-[#E040A0] text-2xl font-black leading-tight">MBG Admin</span>
+            <div className="flex flex-col flex-1 overflow-hidden">
+              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title={user?.name || "MBG Admin"}>{user?.name || "MBG Admin"}</span>
             </div>
           </div>
           
@@ -235,35 +258,7 @@ export default function EditUserByAdmin() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Department */}
-                  <div className="flex-1 flex flex-col gap-2">
-                    <label className="text-[#DCC8E0] text-sm font-bold ml-1">Department</label>
-                    <div className="relative w-full">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-[#E040A0]">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                      </div>
-                      <select
-                        value={department}
-                        onChange={(e) => setDepartment(e.target.value)}
-                        className={`w-full pl-[50px] pr-10 py-3 bg-[#FBF2FB] rounded-full text-base outline-none focus:ring-2 focus:ring-[#E040A0]/30 transition appearance-none cursor-pointer ${department === "" ? "text-[#DCC8E0]" : "text-stone-800"}`}
-                      >
-                        <option value="" disabled>Select department</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Digital Marketing">Digital Marketing</option>
-                        <option value="Operations">Operations</option>
-                      </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center text-gray-500">
-                        <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M1 1L6 6L11 1"></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+                  <div className="flex-1"></div>
                 </div>
 
                 {/* Row 3: Status */}
@@ -320,16 +315,25 @@ export default function EditUserByAdmin() {
                 <div className="p-6 bg-[#FBF2FB] rounded-[48px] shadow-[0_4px_16px_rgba(124,82,170,0.15)] outline outline-1 outline-gray-200 flex flex-col items-center gap-6">
                   <div className="text-center text-slate-500 text-lg font-bold">Profile Image</div>
                   <div className="relative">
-                    <div className="w-36 h-36 bg-[#FBF2FB] rounded-full outline outline-4 outline-[#f472b6]/50 flex flex-col justify-center items-center gap-1 overflow-hidden cursor-pointer hover:bg-pink-50 transition">
-                      <div className="flex flex-col items-center gap-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f472b6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="17 8 12 3 7 8"></polyline>
-                          <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <span className="text-[#f472b6] text-[10px] font-bold uppercase mt-1">UPLOAD PHOTO</span>
-                      </div>
-                      <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" />
+                    <div className="w-36 h-36 bg-[#FBF2FB] rounded-full outline outline-4 outline-[#f472b6]/50 flex flex-col justify-center items-center gap-1 overflow-hidden cursor-pointer hover:bg-pink-50 transition relative group">
+                      {avatarPreview ? (
+                        <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f472b6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                          <span className="text-[#f472b6] text-[10px] font-bold uppercase mt-1">UPLOAD PHOTO</span>
+                        </div>
+                      )}
+                      {avatarPreview && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-white text-xs font-bold uppercase">Change Photo</span>
+                        </div>
+                      )}
+                      <input type="file" accept="image/png, image/jpeg" onChange={handleAvatarChange} className="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
                     {/* Floating Add icon */}
                     <div className="absolute right-0 bottom-0 w-10 h-10 bg-slate-500 rounded-full outline outline-4 outline-white flex justify-center items-center shadow-lg pointer-events-none">

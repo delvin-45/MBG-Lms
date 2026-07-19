@@ -1,18 +1,14 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('../../config/db');
+const { redisClient } = require('../../config/redis');
 const { AppError } = require('../../middlewares/errorHandler');
 require('dotenv').config();
 
-const generateTokens = (user) => {
-  const payload = { id: user.id, email: user.email, role: user.role };
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-  const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-  return { accessToken, refreshToken };
-};
+const REFRESH_TTL = parseInt(process.env.JWT_REFRESH_EXPIRES_IN_SEC, 10) || 604800;
 
 const register = async (userData) => {
-  const { fullName, email, password, role, phoneNumber } = userData;
+  const { fullName, email, password, role } = userData;
 
   if (!fullName) throw new AppError('fullName tidak boleh kosong', 400, '02');
   if (!email) throw new AppError('email tidak boleh kosong', 400, '02');
@@ -31,14 +27,13 @@ const register = async (userData) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const result = await db.query(
-    `INSERT INTO users (full_name, email, password_hash, role, phone_number)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, full_name, email, role, phone_number, created_at`,
-    [fullName, email, passwordHash, role, phoneNumber || null]
+    `INSERT INTO users (full_name, email, password_hash, role)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, full_name, email, role, created_at`,
+    [fullName, email, passwordHash, role]
   );
 
   const u = result.rows[0];
-  // Exact fields for register
   return {
     id: u.id,
     fullName: u.full_name,
@@ -60,18 +55,38 @@ const login = async (credentials) => {
   }
 
   const user = result.rows[0];
+  if (user.status === 'inactive') {
+    throw new AppError('Akun dinonaktifkan, silakan hubungi admin', 403, '08');
+  }
+
   const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) {
     throw new AppError('Email/username atau password salah', 401, '05');
   }
 
-  const { accessToken, refreshToken } = generateTokens(user);
+  // Generate tokens with separate secrets for access and refresh
+  const accessToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+  );
 
-  // Exact fields for login
+  // Store refresh token in Redis for server-side revocation (TTL = 7 days)
+  await redisClient.set(
+    `refresh_token:${user.id}:${refreshToken}`,
+    'valid',
+    { EX: REFRESH_TTL }
+  );
+
   return {
     accessToken,
     refreshToken,
-    tokenType: "Bearer",
+    tokenType: 'Bearer',
     expiresIn: 3600,
     user: {
       id: user.id,
@@ -86,29 +101,52 @@ const refreshToken = async (token) => {
     throw new AppError('Token tidak valid atau sudah expired', 401, '06');
   }
 
+  let decoded;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userResult = await db.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
-    if (userResult.rows.length === 0) {
-      throw new AppError('Data tidak ditemukan', 401, '01');
-    }
-    const user = userResult.rows[0];
-    const tokens = generateTokens(user);
-    // Exact fields for refresh token
-    return {
-      accessToken: tokens.accessToken,
-      expiresIn: 3600
-    };
-  } catch (error) {
+    decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  } catch {
     throw new AppError('Token tidak valid atau sudah expired', 401, '06');
   }
+
+  // Revocation check: token must exist in Redis
+  const redisKey = `refresh_token:${decoded.id}:${token}`;
+  const exists = await redisClient.get(redisKey);
+  if (!exists) {
+    throw new AppError('Token tidak valid atau sudah expired', 401, '06');
+  }
+
+  // Get fresh user data to ensure role/email are up to date
+  const userResult = await db.query(
+    'SELECT id, email, role, status FROM users WHERE id = $1',
+    [decoded.id]
+  );
+  if (userResult.rows.length === 0) {
+    throw new AppError('Token tidak valid atau sudah expired', 401, '06');
+  }
+
+  const user = userResult.rows[0];
+  if (user.status === 'inactive') {
+    throw new AppError('Akun dinonaktifkan, silakan hubungi admin', 403, '08');
+  }
+  const newAccessToken = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m' }
+  );
+
+  return {
+    accessToken: newAccessToken,
+    expiresIn: 3600
+  };
 };
 
 const logout = async (userId, token) => {
   if (!token) {
     throw new AppError('Token tidak valid atau sudah expired', 401, '06');
   }
-  // no return data for logout
+  // Actually revoke the refresh token — delete from Redis
+  const redisKey = `refresh_token:${userId}:${token}`;
+  await redisClient.del(redisKey);
   return null;
 };
 

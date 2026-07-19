@@ -70,6 +70,39 @@ export function CourseProvider({ children }) {
     }
   };
 
+  const updateCourse = async (courseId, courseData) => {
+    try {
+      const res = await api.put(`/courses/${courseId}`, courseData);
+      if (res.status === 'success' && res.data) {
+        setCourses(prev => prev.map(c => c.id === courseId ? { ...c, ...res.data } : c));
+      }
+      return res;
+    } catch (error) {
+      console.error('Error updating course:', error.response?.data || error.message);
+      throw error;
+    }
+  };
+
+  const updateMaterial = async (materialId, materialData) => {
+    try {
+      const response = await api.put(`/materials/${materialId}`, materialData);
+      return response;
+    } catch (err) {
+      console.error('Failed to update material:', err);
+      throw err;
+    }
+  };
+
+  const deleteMaterial = async (materialId) => {
+    try {
+      const response = await api.delete(`/materials/${materialId}`);
+      return response;
+    } catch (err) {
+      console.error('Failed to delete material:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchCourses();
@@ -79,7 +112,7 @@ export function CourseProvider({ children }) {
   }, [user]);
 
   return (
-    <CourseContext.Provider value={{ courses, loading, fetchCourses, addCourse, deleteCourse, addMaterial }}>
+    <CourseContext.Provider value={{ courses, loading, fetchCourses, addCourse, updateCourse, deleteCourse, addMaterial, updateMaterial, deleteMaterial }}>
       {children}
     </CourseContext.Provider>
   );

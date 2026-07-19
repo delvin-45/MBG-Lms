@@ -1,4 +1,4 @@
-﻿services:
+services:
   postgres:
     image: postgres:16-alpine
     container_name: mbg-postgres
@@ -11,12 +11,6 @@
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U mbg_user -d mbg_lms"]
-        interval: 5s
-        timeout: 5s
-        retries: 10
-        start_period: 10s
     networks:
       - mbg-network
 
@@ -26,6 +20,8 @@
     restart: unless-stopped
     ports:
       - "6380:6379"
+    volumes:
+      - redis_data:/data
     networks:
       - mbg-network
 
@@ -40,10 +36,10 @@
     ports:
       - "5000:5000"
     depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - postgres
+      - redis
+    volumes:
+      - uploads_data:/app/uploads
     networks:
       - mbg-network
 
@@ -103,6 +99,8 @@
 volumes:
   postgres_data:
   grafana_data:
+  redis_data:
+  uploads_data:
 
 networks:
   mbg-network:

@@ -14,7 +14,7 @@ const apiRateLimiter = rateLimit({
     res.status(429).json({
       status: 'error',
       code: '429',
-      message: 'Too many requests, please try again later.'
+      message: 'Terlalu banyak permintaan, silakan coba lagi nanti.'
     });
   }
 });

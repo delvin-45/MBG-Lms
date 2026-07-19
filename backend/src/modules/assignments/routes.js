@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes mounted under /api/v1/courses (course-specific assignments)
-courseAssignmentRouter.get('/:courseId/assignments', protect, restrictTo('teacher', 'student'), assignmentController.getAssignmentsByCourse);
+courseAssignmentRouter.get('/:courseId/assignments', protect, restrictTo('teacher', 'student', 'admin'), assignmentController.getAssignmentsByCourse);
 courseAssignmentRouter.post('/:courseId/assignments', protect, restrictTo('teacher'), assignmentController.createAssignment);
 
 // Standalone routes mounted under /api/v1/assignments

@@ -92,7 +92,7 @@ const gradeSubmission = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Submission graded successfully',
+      message: 'Nilai berhasil diberikan.',
       data
     });
   } catch (error) {
@@ -106,7 +106,7 @@ const getMySubmission = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       code: '00',
-      message: 'Submission retrieved successfully',
+      message: 'Data pengumpulan tugas berhasil diambil.',
       data
     });
   } catch (error) {

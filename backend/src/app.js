@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 const apiRateLimiter = require('./middlewares/rateLimiter');
 const { errorHandler } = require('./middlewares/errorHandler');
 const promClient = require('prom-client');
@@ -21,15 +23,31 @@ const app = express();
 // Trust Nginx reverse proxy - required for correct IP identification behind docker
 app.set('trust proxy', 1);
 
+// Security: HTTP security headers (XSS, Clickjacking, MIME, HSTS, CSP, Referrer)
+app.use(helmet());
+
+// Performance: gzip compression for JSON responses
+app.use(compression());
+
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body size limit: 10MB — allows base64 avatar uploads up to 10MB
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve uploaded assignment files statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Apply rate limiter to all API routes
 app.use('/api/', apiRateLimiter);
+
+// Prevent browser caching for all API routes
+app.use('/api/', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
 
 // Basic Health Check
 app.get('/api/v1/health', (req, res) => {

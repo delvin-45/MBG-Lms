@@ -6,9 +6,9 @@ const getAllUsers = async (query) => {
   const page = parseInt(query.page, 10) || 1;
   const limit = parseInt(query.limit, 10) || 10;
   const offset = (page - 1) * limit;
-  const { role, search } = query;
+  const { role, search, status } = query;
 
-  let queryText = 'SELECT id, full_name, email, role, phone_number, avatar_url, created_at FROM users WHERE 1=1';
+  let queryText = 'SELECT id, full_name, email, role, avatar_url, status, created_at FROM users WHERE 1=1';
   const queryParams = [];
   let paramCount = 1;
 
@@ -24,17 +24,26 @@ const getAllUsers = async (query) => {
     paramCount++;
   }
 
-  // Get total count for pagination meta
-  let countQueryText = 'SELECT COUNT(*) FROM users WHERE 1=1';
-  const countQueryParams = [...queryParams];
-  if (role) {
-    countQueryText += ' AND role = $1';
-  }
-  if (search) {
-    countQueryText += role ? ' AND (full_name ILIKE $2 OR email ILIKE $2)' : ' AND (full_name ILIKE $1 OR email ILIKE $1)';
+  if (status) {
+    queryText += ` AND status = $${paramCount}`;
+    queryParams.push(status);
+    paramCount++;
   }
 
-  const countResult = await db.query(countQueryText, countQueryParams);
+  // Get total count for pagination meta
+  let countQueryText = 'SELECT COUNT(*) FROM users WHERE 1=1';
+  if (role) {
+    countQueryText += ` AND role = $${queryParams.indexOf(role) + 1}`;
+  }
+  if (search) {
+    const searchIdx = queryParams.indexOf(`%${search}%`) + 1;
+    countQueryText += ` AND (full_name ILIKE $${searchIdx} OR email ILIKE $${searchIdx})`;
+  }
+  if (status) {
+    countQueryText += ` AND status = $${queryParams.indexOf(status) + 1}`;
+  }
+
+  const countResult = await db.query(countQueryText, queryParams);
   const total = parseInt(countResult.rows[0].count, 10);
 
   // Add order, limit & offset
@@ -48,6 +57,8 @@ const getAllUsers = async (query) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
+    avatarUrl: u.avatar_url,
+    status: u.status,
     createdAt: u.created_at
   }));
 
@@ -66,7 +77,7 @@ const getAllUsers = async (query) => {
 
 const getUserById = async (id) => {
   const result = await db.query(
-    'SELECT id, full_name, email, role, phone_number, avatar_url, created_at FROM users WHERE id = $1',
+    'SELECT id, full_name, email, role, avatar_url, status, created_at FROM users WHERE id = $1',
     [id]
   );
 
@@ -80,8 +91,8 @@ const getUserById = async (id) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
-    phoneNumber: u.phone_number,
     avatarUrl: u.avatar_url,
+    status: u.status,
     createdAt: u.created_at
   };
 };
@@ -124,7 +135,10 @@ const createUser = async (userData) => {
 };
 
 const updateUser = async (id, userData) => {
-  const { fullName, email, role } = userData;
+  const { fullName, email, role, avatarUrl, status } = userData;
+
+  if (avatarUrl === undefined) throw new AppError('avatarUrl wajib dikirim (bisa diisi null)', 400, '02');
+  if (status === undefined) throw new AppError('status wajib dikirim', 400, '02');
 
   const userCheck = await db.query('SELECT id FROM users WHERE id = $1', [id]);
   if (userCheck.rows.length === 0) {
@@ -133,12 +147,14 @@ const updateUser = async (id, userData) => {
 
   const result = await db.query(
     `UPDATE users 
-     SET full_name = COALESCE($1, full_name), 
-         email = COALESCE($2, email),
-         role = COALESCE($3, role)
-     WHERE id = $4
-     RETURNING id, full_name, email, role, created_at`,
-    [fullName, email, role, id]
+     SET full_name = $1, 
+         email = $2,
+         role = $3,
+         avatar_url = $4,
+         status = $5
+     WHERE id = $6
+     RETURNING id, full_name, email, role, avatar_url, status, created_at`,
+    [fullName, email, role, avatarUrl, status, id]
   );
 
   const u = result.rows[0];
@@ -147,7 +163,8 @@ const updateUser = async (id, userData) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
-    createdAt: u.created_at
+    avatarUrl: u.avatar_url,
+    status: u.status
   };
 };
 
@@ -163,7 +180,7 @@ const deleteUser = async (id) => {
 
 const getProfile = async (id) => {
   const result = await db.query(
-    'SELECT id, full_name, email, role, phone_number, avatar_url, created_at FROM users WHERE id = $1',
+    'SELECT id, full_name, email, role, avatar_url, created_at FROM users WHERE id = $1',
     [id]
   );
   if (result.rows.length === 0) {
@@ -175,13 +192,12 @@ const getProfile = async (id) => {
     fullName: u.full_name,
     email: u.email,
     role: u.role,
-    phoneNumber: u.phone_number,
     avatarUrl: u.avatar_url,
   };
 };
 
 const updateProfile = async (id, profileData) => {
-  const { fullName, phoneNumber, avatarUrl } = profileData;
+  const { fullName, avatarUrl } = profileData;
 
   if (fullName !== undefined && !fullName) {
     throw new AppError('fullName tidak boleh kosong', 400, '02');
@@ -195,20 +211,15 @@ const updateProfile = async (id, profileData) => {
   const result = await db.query(
     `UPDATE users 
      SET full_name = COALESCE($1, full_name), 
-         phone_number = COALESCE($2, phone_number),
-         avatar_url = COALESCE($3, avatar_url)
-     WHERE id = $4
-     RETURNING id, full_name, email, role, phone_number, avatar_url, created_at`,
-    [fullName, phoneNumber, avatarUrl, id]
+         avatar_url = COALESCE($2, avatar_url)
+     WHERE id = $3
+     RETURNING id, full_name, email, role, avatar_url, created_at`,
+    [fullName, avatarUrl, id]
   );
 
   const u = result.rows[0];
   return {
-    id: u.id,
     fullName: u.full_name,
-    email: u.email,
-    role: u.role,
-    phoneNumber: u.phone_number,
     avatarUrl: u.avatar_url
   };
 };

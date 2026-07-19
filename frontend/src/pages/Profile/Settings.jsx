@@ -15,7 +15,6 @@ export default function Settings() {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
-	const [phoneNumber, setPhoneNumber] = useState('');
 	const [bio, setBio] = useState('Honors CS student at Evergreen University. Passionate about AI and educational tech.');
 	const [avatarFile, setAvatarFile] = useState(null);
 	const [avatarPreview, setAvatarPreview] = useState('');
@@ -40,7 +39,6 @@ export default function Settings() {
 			setFirstName(parts[0] || 'Alex');
 			setLastName(parts.slice(1).join(' ') || 'Johnson');
 			setEmail(user.email || 'alex.j@mbg-student.com');
-			setPhoneNumber(user.phoneNumber || '');
 			setAvatarPreview(user.avatarUrl || '');
 		}
 	}, [user]);
@@ -49,7 +47,11 @@ export default function Settings() {
 		const file = e.target.files[0];
 		if (file) {
 			setAvatarFile(file);
-			setAvatarPreview(URL.createObjectURL(file));
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setAvatarPreview(reader.result);
+			};
+			reader.readAsDataURL(file);
 		}
 	};
 
@@ -59,21 +61,21 @@ export default function Settings() {
 		setSuccessMsg('');
 
 		const combinedName = `${firstName} ${lastName}`.trim();
-		const formData = new FormData();
-		formData.append('fullName', combinedName);
-		formData.append('phoneNumber', phoneNumber);
-		if (avatarFile) {
-			formData.append('avatar', avatarFile);
+		const payload = {
+			fullName: combinedName
+		};
+		
+		if (avatarPreview && (avatarPreview.startsWith('http') || avatarPreview.startsWith('data:image'))) {
+			payload.avatarUrl = avatarPreview;
 		}
 
 		try {
-			const res = await api.put('/users/profile', formData);
+			const res = await api.put('/users/profile', payload);
 			if (res.status === 'success') {
 				setSuccessMsg("Profile updated successfully!");
 				if (typeof updateUserInfo === 'function') {
 					updateUserInfo({
 						name: res.data?.fullName || combinedName,
-						phoneNumber: res.data?.phoneNumber || phoneNumber,
 						avatarUrl: res.data?.avatarUrl || user.avatarUrl
 					});
 				}
@@ -216,25 +218,13 @@ export default function Settings() {
 
 			{/* Main Content Area on the Right */}
 			<div className="flex flex-col flex-1 min-h-screen">
-				{/* Top Nav */}
-				<div className="flex flex-col-reverse sm:flex-row justify-between items-center bg-[#FEF7FFCC] py-3 px-4 md:px-8 border-b border-[#DCC8E033] gap-4">
-					<div className="flex items-center bg-white py-2 px-3 gap-2 rounded-full border border-[#DCC8E055] w-full max-w-96">
-						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ccrkzlm2_expires_30_days.png"}
-							className="w-[18px] h-6 object-fill"
-							alt="search"
-						/>
-						<input
-							type="text"
-							placeholder="Search..."
-							className="text-gray-700 bg-transparent text-sm w-full outline-none"
-						/>
-					</div>
-					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
-						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Mas Wowok"}</span>
+				{/* Top Nav (Search removed, only profile on right) */}
+				<div className="flex justify-end items-center bg-white py-4 px-6 md:px-10 border-b border-gray-100 shadow-sm w-full h-[72px]">
+					<div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
+						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "ganjar 18%"}</span>
 						<img
 							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
-							className="w-10 h-10 object-cover rounded-full border border-gray-100"
+							className="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm"
 							alt="avatar"
 						/>
 					</div>

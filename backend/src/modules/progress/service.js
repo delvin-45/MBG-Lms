@@ -21,8 +21,8 @@ const getStudentProgress = async (studentId) => {
   const completedAssignment = parseInt(completedAssignmentRes.rows[0].count, 10);
 
   let progressPercentage = 0;
-  if (totalAssignment + totalMaterial > 0) {
-    progressPercentage = Math.round(((completedAssignment + completedMaterial) / (totalAssignment + totalMaterial)) * 100);
+  if (totalAssignment > 0) {
+    progressPercentage = parseFloat(((completedAssignment / totalAssignment) * 100).toFixed(1));
   } else {
     progressPercentage = 100;
   }
@@ -42,7 +42,7 @@ const getStudentProgress = async (studentId) => {
   const perCourse = rows.map(r => {
     const total = r.total_assignments;
     const submitted = r.submitted_assignments;
-    const pct = total === 0 ? 100 : Math.round((submitted / total) * 100);
+    const pct = total === 0 ? 100 : parseFloat(((submitted / total) * 100).toFixed(1));
 
     return {
       courseId: r.course_id,
@@ -90,8 +90,8 @@ const getCourseProgress = async (courseId, teacherId, role) => {
   return rows.map(r => {
     const total = r.total_assignments;
     const submitted = r.submitted_assignments;
-    const pct = total === 0 ? 100 : Math.round((submitted / total) * 100);
-    const avgScore = r.average_score ? Math.round(r.average_score) : null;
+    const pct = total === 0 ? 100 : parseFloat(((submitted / total) * 100).toFixed(1));
+    const avgScore = r.average_score ? parseFloat(parseFloat(r.average_score).toFixed(1)) : null;
 
     return {
       studentId: r.student_id,
