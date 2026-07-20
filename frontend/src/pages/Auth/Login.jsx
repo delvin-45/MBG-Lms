@@ -5,8 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 export default function Login() {
 	const navigate = useNavigate();
 	const { login } = useAuth();
-	const [email, setEmail] = useState('student@mbg.com');
-	const [password, setPassword] = useState('password123');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [showSplash, setShowSplash] = useState(false);
 	const [loadingText, setLoadingText] = useState("Securing premium learning environment...");
 	const [error, setError] = useState('');
@@ -63,19 +63,19 @@ export default function Login() {
 
 			{/* Main Login Screen */}
 			<div className="flex flex-col bg-white min-h-screen">
-				<div className="self-stretch bg-white">
-					<div className="flex items-center self-stretch">
+				<div className="self-stretch bg-white flex-1 flex flex-col">
+					<div className="flex items-stretch self-stretch flex-1 min-h-screen">
 						<div className="flex flex-1 flex-col items-start pt-36"
 							style={{
 								background: "linear-gradient(180deg, #E040A099, #E040A000)"
 							}}>
-							<span className="text-white text-6xl font-bold w-[356px] mb-[489px] ml-16 mt-6" >
+							<span className="text-white text-6xl font-bold w-[356px] mb-auto ml-16 mt-6" >
 								{"Focus on\nwhat matters."}
 							</span>
 							<div className="w-[357px] h-[136px] mb-16 ml-16">
 							</div>
 						</div>
-						<div className="flex flex-1 flex-col items-center bg-[#FEF7FF] py-[81px] gap-[50px]">
+						<div className="flex flex-1 flex-col items-center justify-center bg-[#FEF7FF] py-[81px] gap-[50px]">
 							<img
 								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/34x7tigk_expires_30_days.png"}
 								className="w-[90px] h-[110px] object-fill"
