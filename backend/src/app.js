@@ -37,7 +37,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Serve uploaded assignment files statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Apply rate limiter to all API routes
+// [TAHAP 2: SATPAM DITEMPATKAN DI PINTU DEPAN]
+// Semua orang/request dari internet yang mau masuk ke jalur /api/ 
+// wajib melewati dan diperiksa oleh satpam (apiRateLimiter) ini.
 app.use('/api/', apiRateLimiter);
 
 // Prevent browser caching for all API routes

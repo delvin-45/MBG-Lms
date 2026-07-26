@@ -87,9 +87,9 @@ export default function CourseList() {
 	});
 
 	return (
-		<div className="flex flex-col md:flex-row bg-white min-h-screen font-sans antialiased text-gray-800">
+		<div className="flex flex-col md:flex-row bg-white min-h-screen md:h-screen md:overflow-hidden font-sans antialiased text-gray-800">
 			{/* Sidebar on the Left */}
-			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] min-h-0 md:min-h-screen">
+			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] md:h-screen md:sticky md:top-0 z-30 overflow-y-auto">
 				<div className="flex flex-col items-center pb-8 px-5 w-full">
 					<span className="text-[#E040A0] text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
 						{"My Better Grade"}
@@ -165,7 +165,7 @@ export default function CourseList() {
 			</div>
 
 			{/* Main Content Area on the Right */}
-			<div className="flex flex-col flex-1 min-h-screen">
+			<div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
 				{/* Actual Page Courses Content */}
 				<div className="flex flex-col flex-1 p-4 md:p-8 gap-8 max-w-[1200px] w-full mx-auto">
 
@@ -210,8 +210,8 @@ export default function CourseList() {
 									key={tab}
 									onClick={() => setActiveTab(tab)}
 									className={`py-2 px-6 rounded-full font-bold text-sm transition border-0 ${activeTab === tab
-											? "bg-[#E040A0] text-white shadow-md"
-											: "bg-[#FBF2FB] text-[#604868] hover:bg-[#F2E8F2]"
+										? "bg-[#E040A0] text-white shadow-md"
+										: "bg-[#FBF2FB] text-[#604868] hover:bg-[#F2E8F2]"
 										}`}
 								>
 									{tab}

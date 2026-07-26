@@ -96,9 +96,9 @@ export default function DashboardStudent() {
 	};
 
 	return (
-		<div className="flex flex-col md:flex-row bg-white min-h-screen">
+		<div className="flex flex-col md:flex-row bg-white min-h-screen md:h-screen md:overflow-hidden">
 			{/* Sidebar on the Left */}
-			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] min-h-0 md:min-h-screen">
+			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] md:h-screen md:sticky md:top-0 z-30 overflow-y-auto">
 				<div className="flex flex-col items-center pb-8 px-5 w-full">
 					<span className="text-[#E040A0] text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
 						{"My Better Grade"}
@@ -174,21 +174,9 @@ export default function DashboardStudent() {
 			</div>
 
 			{/* Main Content Area on the Right */}
-			<div className="flex flex-col flex-1 min-h-screen">
+			<div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
 				{/* Top Nav */}
-				<div className="flex flex-col-reverse sm:flex-row justify-between items-center bg-[#FEF7FFCC] py-3 px-4 md:px-8 border-b border-[#DCC8E033] gap-4">
-					<div className="flex items-center bg-white py-2 px-3 gap-2 rounded-full border border-[#DCC8E055] w-full max-w-96">
-						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ccrkzlm2_expires_30_days.png"}
-							className="w-[18px] h-6 object-fill"
-							alt="search"
-						/>
-						<input
-							type="text"
-							placeholder="Search courses, notes..."
-							className="text-gray-700 bg-transparent text-sm w-full outline-none"
-						/>
-					</div>
+				<div className="flex justify-end items-center bg-[#FEF7FFCC] py-3 px-4 md:px-8 border-b border-[#DCC8E033] h-16 shrink-0">
 					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
 						<img

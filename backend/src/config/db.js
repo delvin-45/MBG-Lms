@@ -54,20 +54,20 @@ const initDb = async (retries = 5, delay = 2000) => {
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `);
-// Migration for databases created before the status column existed.
-await client.query(`
+    // Migration for databases created before the status column existed.
+    await client.query(`
   ALTER TABLE users
   ADD COLUMN IF NOT EXISTS status VARCHAR(20)
   NOT NULL DEFAULT 'active';
 `);
 
-await client.query(`
+    await client.query(`
   UPDATE users
   SET status = 'active'
   WHERE status IS NULL;
 `);
 
-await client.query(`
+    await client.query(`
   DO $$
   BEGIN
     IF NOT EXISTS (

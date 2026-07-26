@@ -2,10 +2,21 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 
 const BASE_URL =
-  __ENV.BASE_URL || "http://host.docker.internal:8080/api/v1";
+  __ENV.BASE_URL || "http://localhost:8080/api/v1";
 
 const EMAIL = __ENV.EMAIL || "ganjar@mbg.com";
 const PASSWORD = __ENV.PASSWORD || "anjayy";
+
+// PERFORMATIVE MODE (True = Bypass Rate Limiter, False = Kena Limit)
+const PERFORMATIVE_MODE = true;
+
+// Fungsi pembantu untuk menyisipkan header bypass (jika mode aktif)
+function addPerformativeHeader(headers = {}) {
+  if (PERFORMATIVE_MODE) {
+    headers['x-performative-mode'] = 'mbg-stress-bypass';
+  }
+  return headers;
+}
 
 export const options = {
   scenarios: {
@@ -36,7 +47,7 @@ export const options = {
       "p(99)<1000",
     ],
 
-    "http_req_duration{name:health}": [
+    "http_req_duration{name:profile}": [
       "p(95)<300",
     ],
 
@@ -54,9 +65,9 @@ export function setup() {
       password: PASSWORD,
     }),
     {
-      headers: {
+      headers: addPerformativeHeader({
         "Content-Type": "application/json",
-      },
+      }),
       tags: {
         name: "login_setup",
       },
@@ -83,26 +94,29 @@ export function setup() {
 }
 
 export default function (data) {
-  const healthResponse = http.get(
-    `${BASE_URL}/health`,
+  const profileResponse = http.get(
+    `${BASE_URL}/users/profile`,
     {
+      headers: addPerformativeHeader({
+        Authorization: `Bearer ${data.token}`,
+      }),
       tags: {
-        name: "health",
+        name: "profile",
       },
     }
   );
 
-  check(healthResponse, {
-    "health returns HTTP 200": (response) =>
+  check(profileResponse, {
+    "profile returns HTTP 200": (response) =>
       response.status === 200,
   });
 
   const coursesResponse = http.get(
     `${BASE_URL}/courses?page=1&limit=10`,
     {
-      headers: {
+      headers: addPerformativeHeader({
         Authorization: `Bearer ${data.token}`,
-      },
+      }),
       tags: {
         name: "courses",
       },

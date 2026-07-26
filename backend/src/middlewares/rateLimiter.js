@@ -27,9 +27,19 @@ const apiRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 
-  // Hanya dilewati ketika performance testing
-  // diaktifkan secara eksplisit.
-  skip: () => process.env.PERFORMANCE_TEST_MODE === "true",
+  
+  // Logika di bawah ini yang memutuskan apakah pengunjung boleh lolos (Bypass) atau dihitung.
+  skip: (req) => {
+    // 1. Cek mode sakelar utama dari file .env (Jalur VIP Global)
+    if (process.env.PERFORMANCE_TEST_MODE === "true") return true;
+
+    // 2. Cek apakah ada  "x-performative-mode" yang berisi kata sandi "mbg-stress-bypass"
+    // Jika K6 membawa kata sandi ini, membiarkan K6 lolos masuk!
+    if (req.headers["x-performative-mode"] === "mbg-stress-bypass") return true;
+
+    // 3. Jika tidak bawa kata sandi (pengunjung biasa / hacker), hitung kliknya dan blokir jika melebihi batas
+    return false;
+  },
 
   handler: (req, res) => {
     return res.status(429).json({

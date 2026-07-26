@@ -35,6 +35,12 @@ const protect = async (req, res, next) => {
     req.user = decoded; // decoded contains { id, email, role }
     next();
   } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return next(new AppError('Token sudah expired', 401, '06'));
+    }
+    if (error.name === 'JsonWebTokenError') {
+      return next(new AppError('Token tidak valid', 401, '06'));
+    }
     next(error);
   }
 };

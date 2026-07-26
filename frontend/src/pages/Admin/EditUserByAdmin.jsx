@@ -95,20 +95,16 @@ export default function EditUserByAdmin() {
   }
 
   return (
-    <div className="flex bg-gradient-to-b from-[#FEF7FF] to-white min-h-screen font-sans">
+    <div className="flex flex-col md:flex-row bg-gradient-to-b from-[#FEF7FF] to-white min-h-screen md:h-screen md:overflow-hidden font-sans">
       {/* Left Sidebar */}
-      <div className="w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 min-h-screen border-r border-[#DCC8E033]">
+      <div className="w-full md:w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 md:h-screen md:sticky md:top-0 z-30 overflow-y-auto border-b md:border-b-0 md:border-r border-[#DCC8E033]">
         <div className="flex flex-col gap-1 w-full">
           <div className="h-[71px] px-4 flex items-center gap-3 mb-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md overflow-hidden shrink-0">
-              {user?.avatarUrl ? (
-                <img src={user.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
-              ) : (
-                <span className="text-white text-2xl font-black">{user?.name ? user.name.charAt(0).toUpperCase() : 'M'}</span>
-              )}
+              <span className="text-white text-2xl font-black">M</span>
             </div>
             <div className="flex flex-col flex-1 overflow-hidden">
-              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title={user?.name || "MBG Admin"}>{user?.name || "MBG Admin"}</span>
+              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title="MBG Admin">MBG Admin</span>
             </div>
           </div>
           
@@ -123,7 +119,7 @@ export default function EditUserByAdmin() {
         <div className="w-[256px] pt-4 mt-auto border-t border-[rgba(220,200,224,0.30)] flex flex-col">
           <div className="w-full px-6 py-3 rounded-full flex items-center gap-3 cursor-pointer hover:bg-red-50 transition" onClick={() => { logout(); navigate('/'); }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="#907898" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 3L11.86 4.14L14.71 7H4V9H14.71L11.86 11.86L13 13L18 8L13 3ZM8 16H2V2H8V0H2C0.9 0 0 2V16C0 17.1 0.9 18 2 18H8V16Z"/>
+              <path d="M13 3L11.86 4.14L14.71 7H4V9H14.71L11.86 11.86L13 13L18 8L13 3ZM8 16H2V2H8V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H8V16Z"/>
             </svg>
             <span className="text-[#604868] text-base font-medium">Log Out</span>
           </div>
@@ -131,21 +127,10 @@ export default function EditUserByAdmin() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 min-h-screen">
-        {/* Top Navbar */}
-        <div className="h-16 px-6 bg-[#FEF7FF] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex justify-between items-center w-full z-10">
-          <div className="w-[400px] px-4 py-2 bg-[#F2E8F2] rounded-full flex items-center">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="#DCC8E0" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-              <path d="M12.5 11H11.71L11.43 10.73C12.41 9.59 13 8.11 13 6.5C13 2.91 10.09 0 6.5 0C2.91 0 0 2.91 0 6.5C0 10.09 2.91 13 6.5 13C8.11 13 9.59 12.41 10.73 11.43L11 11.71V12.5L16 17.49L17.49 16L12.5 11ZM6.5 11C4.01 11 2 8.99 2 6.5C2 4.01 4.01 2 6.5 2C8.99 2 11 4.01 11 6.5C11 8.99 8.99 11 6.5 11Z"/>
-            </svg>
-            <input
-              type="text"
-              placeholder="Global search..."
-              className="bg-transparent outline-none w-full text-sm text-[#604868] placeholder:text-[#DCC8E0]"
-            />
-          </div>
+      <div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
+        {/* Top Navbar (Without Search Bar) */}
+        <div className="h-16 px-6 bg-[#FEF7FF] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex justify-end items-center w-full z-10 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-px h-8 bg-[#DCC8E0]"></div>
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
               <div className="flex flex-col items-end">
                 <span className="text-[#2E1A28] text-xs font-bold leading-tight">{user ? user.name : "Admin User"}</span>

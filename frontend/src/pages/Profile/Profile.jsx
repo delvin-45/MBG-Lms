@@ -54,9 +54,9 @@ export default function Profile() {
 	];
 
 	return (
-		<div className="flex flex-col md:flex-row bg-white min-h-screen font-sans antialiased text-gray-800">
+		<div className="flex flex-col md:flex-row bg-white min-h-screen md:h-screen md:overflow-hidden font-sans antialiased text-gray-800">
 			{/* Sidebar on the Left */}
-			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] min-h-0 md:min-h-screen">
+			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] md:h-screen md:sticky md:top-0 z-30 overflow-y-auto">
 				<div className="flex flex-col items-center pb-8 px-5 w-full">
 					<span className="text-[#E040A0] text-2xl font-bold cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/")}>
 						{"My Better Grade"}
@@ -155,7 +155,7 @@ export default function Profile() {
 			</div>
 
 			{/* Main Content Area on the Right */}
-			<div className="flex flex-col flex-1 min-h-screen bg-[#FEF7FF]/30">
+			<div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto bg-[#FEF7FF]/30">
 				{/* Top Nav (Search removed, only profile on right) */}
 				<div className="flex justify-end items-center bg-white py-4 px-6 md:px-10 border-b border-gray-100 shadow-sm w-full h-[72px]">
 					<div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
@@ -202,7 +202,7 @@ export default function Profile() {
 											<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
 												<path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
 											</svg>
-											<span>{`ID: MBG-${user?.id?.toString().slice(0,8) || "2024-8891"}`}</span>
+											<span>{`ID: MBG-${user?.id?.toString().slice(0, 8) || "2024-8891"}`}</span>
 										</div>
 										<div className="bg-[#E6F4FA] text-[#0096CC] text-xs font-heading font-bold py-2 px-4 rounded-full flex items-center gap-1.5 border border-[#DCC8E0]/20 shadow-sm">
 											<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

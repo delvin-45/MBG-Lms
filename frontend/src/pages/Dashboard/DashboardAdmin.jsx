@@ -49,7 +49,7 @@ export default function DashboardAdmin() {
       if (resTotal.status === 'success' && resTotal.meta) {
         setTotalUsersCount(resTotal.meta.totalData);
       }
-      
+
       const resStudent = await api.get('/users?role=student&status=active&limit=1');
       if (resStudent.status === 'success' && resStudent.meta) {
         setActiveStudentsCount(resStudent.meta.totalData);
@@ -91,23 +91,19 @@ export default function DashboardAdmin() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-gradient-to-b from-[#FEF7FF] to-white min-h-screen font-sans">
+    <div className="flex flex-col md:flex-row bg-gradient-to-b from-[#FEF7FF] to-white min-h-screen md:h-screen md:overflow-hidden font-sans">
       {/* Left Sidebar */}
-      <div className="w-full md:w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 min-h-0 md:min-h-screen border-b md:border-b-0 md:border-r border-[#DCC8E033]">
+      <div className="w-full md:w-[288px] bg-[#FBF2FB] p-4 flex flex-col justify-between shrink-0 md:h-screen md:sticky md:top-0 z-30 overflow-y-auto border-b md:border-b-0 md:border-r border-[#DCC8E033]">
         <div className="flex flex-col gap-1 w-full">
           <div className="h-[71px] px-4 flex items-center gap-3 mb-4 cursor-pointer" onClick={() => navigate("/")}>
             <div className="w-12 h-12 relative bg-[#E040A0] rounded-full flex justify-center items-center shadow-md overflow-hidden shrink-0">
-              {user?.avatarUrl ? (
-                <img src={user.avatarUrl} className="w-full h-full object-cover" alt="avatar" />
-              ) : (
-                <span className="text-white text-2xl font-black">{user?.name ? user.name.charAt(0).toUpperCase() : 'M'}</span>
-              )}
+              <span className="text-white text-2xl font-black">M</span>
             </div>
             <div className="flex flex-col flex-1 overflow-hidden">
-              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title={user?.name || "MBG Admin"}>{user?.name || "MBG Admin"}</span>
+              <span className="text-[#E040A0] text-xl font-black leading-tight line-clamp-2 break-words" title="MBG Admin">MBG Admin</span>
             </div>
           </div>
-          
+
           <div className="w-[256px] px-6 py-3 bg-[#E040A0] shadow-[0_4px_16px_rgba(224,64,160,0.20)] rounded-full flex items-center gap-3 cursor-pointer" onClick={() => navigate("/dashboard-admin")}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
               <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
@@ -119,7 +115,7 @@ export default function DashboardAdmin() {
         <div className="w-[256px] pt-4 mt-auto border-t border-[rgba(220,200,224,0.30)] flex flex-col">
           <div className="w-full px-6 py-3 rounded-full flex items-center gap-3 cursor-pointer hover:bg-red-50 transition" onClick={() => { logout(); navigate('/'); }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="#907898" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 3L11.86 4.14L14.71 7H4V9H14.71L11.86 11.86L13 13L18 8L13 3ZM8 16H2V2H8V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H8V16Z"/>
+              <path d="M13 3L11.86 4.14L14.71 7H4V9H14.71L11.86 11.86L13 13L18 8L13 3ZM8 16H2V2H8V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H8V16Z" />
             </svg>
             <span className="text-[#604868] text-base font-medium">Log Out</span>
           </div>
@@ -127,7 +123,7 @@ export default function DashboardAdmin() {
       </div>
 
       {/* Main Content Area on the Right */}
-      <div className="flex flex-col flex-1 min-h-screen">
+      <div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
         {/* Top Navbar */}
         <div className="py-3 md:h-16 px-4 md:px-6 bg-[#FEF7FF] shadow-[0_1px_2px_rgba(0,0,0,0.05)] flex flex-col-reverse sm:flex-row justify-end items-center w-full z-10 gap-4">
           <div className="flex items-center gap-4">
@@ -157,7 +153,7 @@ export default function DashboardAdmin() {
               onClick={() => navigate("/add-user")}
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.25 9.75H9.75V14.25H8.25V9.75H3.75V8.25H8.25V3.75H9.75V8.25H14.25V9.75Z"/>
+                <path d="M14.25 9.75H9.75V14.25H8.25V9.75H3.75V8.25H8.25V3.75H9.75V8.25H14.25V9.75Z" />
               </svg>
               <span className="text-white text-base font-bold">Add New User</span>
             </button>
@@ -168,7 +164,7 @@ export default function DashboardAdmin() {
             <div className="flex-1 p-6 bg-white/70 backdrop-blur-sm rounded-[32px] outline outline-1 outline-[rgba(224,64,160,0.10)] flex flex-col items-start shadow-sm">
               <div className="px-3 py-2 bg-[rgba(240,128,192,0.30)] rounded-full mb-4">
                 <svg width="24" height="20" viewBox="0 0 24 20" fill="#E040A0" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.33 13 0 14.34 0 17V20H16V17C16 14.34 10.67 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15.02 17 17V20H24V17C24 14.34 18.67 13 16 13Z"/>
+                  <path d="M16 11C17.66 11 18.99 9.66 18.99 8C18.99 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 10.99 9.66 10.99 8C10.99 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.33 13 0 14.34 0 17V20H16V17C16 14.34 10.67 13 8 13ZM16 13C15.71 13 15.38 13.02 15.03 13.05C16.19 13.89 17 15.02 17 17V20H24V17C24 14.34 18.67 13 16 13Z" />
                 </svg>
               </div>
               <span className="text-[#604868] text-sm font-medium mb-1">Total Users</span>
@@ -177,8 +173,8 @@ export default function DashboardAdmin() {
             <div className="flex-1 p-6 bg-white/70 backdrop-blur-sm rounded-[32px] outline outline-1 outline-[rgba(224,64,160,0.10)] flex flex-col items-start shadow-sm">
               <div className="px-3 py-2 bg-[rgba(238,220,255,0.30)] rounded-full mb-4">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C52AA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                  <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
                 </svg>
               </div>
               <span className="text-[#604868] text-sm font-medium mb-1">Active Students</span>
@@ -191,7 +187,7 @@ export default function DashboardAdmin() {
             <div className="p-4 md:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-[#F2E8F2] w-full gap-4">
               <div className="w-full lg:max-w-[384px] px-4 py-2.5 bg-[#FBF2FB] rounded-full outline outline-1 outline-[rgba(220,200,224,0.30)] flex items-center">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="#DCC8E0" xmlns="http://www.w3.org/2000/svg" className="mr-3">
-                  <path d="M12.5 11H11.71L11.43 10.73C12.41 9.59 13 8.11 13 6.5C13 2.91 10.09 0 6.5 0C2.91 0 0 2.91 0 6.5C0 10.09 2.91 13 6.5 13C8.11 13 9.59 12.41 10.73 11.43L11 11.71V12.5L16 17.49L17.49 16L12.5 11ZM6.5 11C4.01 11 2 8.99 2 6.5C2 4.01 4.01 2 6.5 2C8.99 2 11 4.01 11 6.5C11 8.99 8.99 11 6.5 11Z"/>
+                  <path d="M12.5 11H11.71L11.43 10.73C12.41 9.59 13 8.11 13 6.5C13 2.91 10.09 0 6.5 0C2.91 0 0 2.91 0 6.5C0 10.09 2.91 13 6.5 13C8.11 13 9.59 12.41 10.73 11.43L11 11.71V12.5L16 17.49L17.49 16L12.5 11ZM6.5 11C4.01 11 2 8.99 2 6.5C2 4.01 4.01 2 6.5 2C8.99 2 11 4.01 11 6.5C11 8.99 8.99 11 6.5 11Z" />
                 </svg>
                 <input
                   type="text"
@@ -215,13 +211,13 @@ export default function DashboardAdmin() {
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
                 {/* Status filter */}
                 <div className="relative flex-1 min-w-[140px]">
-                  <select 
+                  <select
                     value={statusFilter}
                     onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                     className="appearance-none w-full px-6 py-2.5 bg-[#FBF2FB] rounded-full outline outline-1 outline-[rgba(220,200,224,0.30)] text-sm text-[#604868] cursor-pointer outline-none"
@@ -232,13 +228,13 @@ export default function DashboardAdmin() {
                   </select>
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
                 <div className="p-2.5 bg-[#FBF2FB] rounded-full outline outline-1 outline-[rgba(220,200,224,0.30)] cursor-pointer hover:bg-[#F2E8F2] transition shrink-0">
                   <svg width="18" height="12" viewBox="0 0 18 12" fill="#604868" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 12H11V10H7V12ZM0 0V2H18V0H0ZM3 7H15V5H3V7Z"/>
+                    <path d="M7 12H11V10H7V12ZM0 0V2H18V0H0ZM3 7H15V5H3V7Z" />
                   </svg>
                 </div>
               </div>
@@ -302,14 +298,14 @@ export default function DashboardAdmin() {
                             {/* Edit Button */}
                             <button onClick={() => navigate(`/edit-user/${u.id}`)} className="p-2 rounded-full hover:bg-gray-100 transition cursor-pointer">
                               <svg width="15" height="15" viewBox="0 0 15 15" fill="#0096CC" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12.92 0L15 2.08L4.37 12.71H2.29V10.63L12.92 0ZM1.25 13.75H13.75V15H1.25V13.75Z"/>
+                                <path d="M12.92 0L15 2.08L4.37 12.71H2.29V10.63L12.92 0ZM1.25 13.75H13.75V15H1.25V13.75Z" />
                               </svg>
                             </button>
                             {/* Delete Button */}
                             {u.id !== user?.id && (
                               <button onClick={() => handleDeleteUser(u.id)} className="p-2 rounded-full hover:bg-red-50 transition cursor-pointer">
                                 <svg width="14" height="15" viewBox="0 0 14 15" fill="#E53E3E" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M3.5 13.5C3.5 14.32 4.18 15 5 15H9C9.82 15 10.5 14.32 10.5 13.5V3H3.5V13.5ZM11.25 1.5H8.62L7.87 0.75H6.12L5.37 1.5H2.75V2.5H11.25V1.5Z"/>
+                                  <path d="M3.5 13.5C3.5 14.32 4.18 15 5 15H9C9.82 15 10.5 14.32 10.5 13.5V3H3.5V13.5ZM11.25 1.5H8.62L7.87 0.75H6.12L5.37 1.5H2.75V2.5H11.25V1.5Z" />
                                 </svg>
                               </button>
                             )}
@@ -332,21 +328,21 @@ export default function DashboardAdmin() {
                 <span className="text-[#604868] font-medium"> users</span>
               </div>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   disabled={page <= 1}
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   className="p-2 rounded-full outline outline-1 outline-[#DCC8E0] disabled:opacity-30 hover:bg-gray-50 transition flex items-center justify-center cursor-pointer"
                 >
                   <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor" className={page <= 1 ? "text-[#DCC8E0]" : "text-[#604868]"} xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.4 10.59L2.83 6L7.4 1.41L6 0L0 6L6 12L7.4 10.59Z"/>
+                    <path d="M7.4 10.59L2.83 6L7.4 1.41L6 0L0 6L6 12L7.4 10.59Z" />
                   </svg>
                 </button>
                 <div className="flex items-center gap-1">
                   {[...Array(meta.totalPage || 1)].map((_, i) => {
                     const isCurrent = page === i + 1;
                     return (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => setPage(i + 1)}
                         className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer ${isCurrent ? 'bg-[#E040A0] text-white' : 'text-[#604868] hover:bg-gray-50 bg-transparent'}`}
                       >
@@ -355,13 +351,13 @@ export default function DashboardAdmin() {
                     );
                   })}
                 </div>
-                <button 
+                <button
                   disabled={page >= meta.totalPage}
                   onClick={() => setPage(p => Math.min(meta.totalPage, p + 1))}
                   className="p-2 rounded-full outline outline-1 outline-[#DCC8E0] disabled:opacity-30 hover:bg-gray-50 transition flex items-center justify-center cursor-pointer"
                 >
                   <svg width="8" height="12" viewBox="0 0 8 12" fill="currentColor" className={page >= meta.totalPage ? "text-[#DCC8E0]" : "text-[#604868]"} xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0.6 1.41L5.17 6L0.6 10.59L2 12L8 6L2 0L0.6 1.41Z"/>
+                    <path d="M0.6 1.41L5.17 6L0.6 10.59L2 12L8 6L2 0L0.6 1.41Z" />
                   </svg>
                 </button>
               </div>

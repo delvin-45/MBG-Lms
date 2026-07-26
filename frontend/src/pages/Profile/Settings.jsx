@@ -64,7 +64,7 @@ export default function Settings() {
 		const payload = {
 			fullName: combinedName
 		};
-		
+
 		if (avatarPreview && (avatarPreview.startsWith('http') || avatarPreview.startsWith('data:image'))) {
 			payload.avatarUrl = avatarPreview;
 		}
@@ -116,9 +116,9 @@ export default function Settings() {
 	};
 
 	return (
-		<div className="flex flex-col md:flex-row bg-white min-h-screen font-sans antialiased text-gray-800">
+		<div className="flex flex-col md:flex-row bg-white min-h-screen md:h-screen md:overflow-hidden font-sans antialiased text-gray-800">
 			{/* Sidebar on the Left */}
-			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] min-h-0 md:min-h-screen">
+			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] md:h-screen md:sticky md:top-0 z-30 overflow-y-auto">
 				<div className="flex flex-col items-center pb-8 px-5 w-full">
 					<span className="text-[#E040A0] text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
 						{"My Better Grade"}
@@ -217,7 +217,7 @@ export default function Settings() {
 			</div>
 
 			{/* Main Content Area on the Right */}
-			<div className="flex flex-col flex-1 min-h-screen">
+			<div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
 				{/* Top Nav (Search removed, only profile on right) */}
 				<div className="flex justify-end items-center bg-white py-4 px-6 md:px-10 border-b border-gray-100 shadow-sm w-full h-[72px]">
 					<div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
@@ -245,8 +245,8 @@ export default function Settings() {
 								key={subTab}
 								onClick={() => setActiveSubTab(subTab)}
 								className={`py-3 px-4 font-bold text-sm bg-transparent border-0 border-b-2 transition cursor-pointer ${activeSubTab === subTab
-										? "border-[#E040A0] text-[#E040A0]"
-										: "border-transparent text-gray-400 hover:text-[#E040A0]"
+									? "border-[#E040A0] text-[#E040A0]"
+									: "border-transparent text-gray-400 hover:text-[#E040A0]"
 									}`}
 							>
 								{subTab}
@@ -407,7 +407,7 @@ export default function Settings() {
 											onChange={(e) => setCurrentPassword(e.target.value)}
 											className="bg-white text-sm py-2.5 pl-4 pr-10 rounded-full border border-[#DCC8E0] w-full"
 										/>
-										<div 
+										<div
 											className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
 											onClick={() => setShowOldPassword(!showOldPassword)}
 										>
@@ -424,7 +424,7 @@ export default function Settings() {
 											onChange={(e) => setNewPassword(e.target.value)}
 											className="bg-white text-sm py-2.5 pl-4 pr-10 rounded-full border border-[#DCC8E0] w-full"
 										/>
-										<div 
+										<div
 											className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
 											onClick={() => setShowNewPassword(!showNewPassword)}
 										>

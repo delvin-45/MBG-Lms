@@ -55,16 +55,16 @@ export default function AssignmentList() {
 			if (courseRes.status === 'success' && courseRes.data) {
 				const coursesList = Array.isArray(courseRes.data) ? courseRes.data : (courseRes.data.data || []);
 				setCourses(coursesList);
-				
+
 				// 2. Fetch assignments for each course
-				const assignmentsPromises = coursesList.map(c => 
+				const assignmentsPromises = coursesList.map(c =>
 					api.get(`/courses/${c.id}/assignments`)
 						.then(res => res.status === 'success' ? res.data.map(a => ({ ...a, courseTitle: c.title, courseCategory: c.category })) : [])
 						.catch(() => [])
 				);
 				const results = await Promise.all(assignmentsPromises);
 				const mergedAssignments = results.flat();
-				
+
 				// 3. If student, fetch their submission for each assignment
 				if (user?.role === 'student') {
 					const submissionPromises = mergedAssignments.map(a =>
@@ -195,9 +195,9 @@ export default function AssignmentList() {
 	const filteredSubs = getFilteredSubmissions().sort((a, b) => new Date(a.submittedAt) - new Date(b.submittedAt));
 
 	return (
-		<div className="flex bg-white min-h-screen font-sans antialiased text-gray-800">
+		<div className="flex flex-col md:flex-row bg-white min-h-screen md:h-screen md:overflow-hidden font-sans antialiased text-gray-800">
 			{/* Sidebar on the Left */}
-			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-64 border-r border-[#DCC8E033] min-h-screen">
+			<div className="flex flex-col shrink-0 items-center bg-[#FBF2FB] py-6 w-full md:w-64 border-b md:border-b-0 md:border-r border-[#DCC8E033] md:h-screen md:sticky md:top-0 z-30 overflow-y-auto">
 				<div className="flex flex-col items-center pb-8 px-5 w-full">
 					<span className="text-[#E040A0] text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
 						{"My Better Grade"}
@@ -206,7 +206,7 @@ export default function AssignmentList() {
 				<div className="flex flex-col items-start px-4 gap-1 w-full flex-1">
 					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
 							className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
 							alt="dashboard"
 						/>
@@ -216,7 +216,7 @@ export default function AssignmentList() {
 					</div>
 					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
 							className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
 							alt="courses"
 						/>
@@ -226,7 +226,7 @@ export default function AssignmentList() {
 					</div>
 					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full text-[#2E1A28] font-bold" onClick={() => navigate("/assignments")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
 							className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
 							alt="assignments"
 						/>
@@ -236,7 +236,7 @@ export default function AssignmentList() {
 					</div>
 					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
 							className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
 							alt="progress"
 						/>
@@ -246,7 +246,7 @@ export default function AssignmentList() {
 					</div>
 					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
 							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
 							alt="profile"
 						/>
@@ -256,7 +256,7 @@ export default function AssignmentList() {
 					</div>
 					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"} 
+							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
 							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
 							alt="settings"
 						/>
@@ -273,27 +273,13 @@ export default function AssignmentList() {
 			</div>
 
 			{/* Main Content Area on the Right */}
-			<div className="flex flex-col flex-1 min-h-screen overflow-x-hidden">
+			<div className="flex flex-col flex-1 h-full md:h-screen overflow-y-auto">
 				{/* Top Nav */}
-				<div className={`flex ${isTeacher ? 'justify-end' : 'justify-between'} items-center bg-[#FEF7FFCC] py-3 px-8 border-b border-[#DCC8E033] h-16 w-full`}>
-					{!isTeacher && (
-						<div className="flex items-center bg-white py-2 px-3 gap-2 rounded-full border border-[#DCC8E055] w-72 md:w-96">
-							<img
-								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ccrkzlm2_expires_30_days.png"} 
-								className="w-[18px] h-6 object-fill"
-								alt="search"
-							/>
-							<input
-								type="text"
-								placeholder="Search tasks..."
-								className="text-gray-700 bg-transparent text-sm w-full outline-none"
-							/>
-						</div>
-					)}
+				<div className="flex justify-end items-center bg-[#FEF7FFCC] py-3 px-8 border-b border-[#DCC8E033] h-16 w-full shrink-0">
 					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
 						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"} 
+							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
 							className="w-10 h-10 object-cover rounded-full border border-gray-100"
 							alt="avatar"
 						/>
@@ -302,24 +288,24 @@ export default function AssignmentList() {
 
 				{/* Actual Page Assignments Content */}
 				<div className="flex flex-1 p-6 md:p-8 gap-6 md:gap-8 max-w-[1200px] w-full mx-auto">
-					
+
 					{/* Left Assignments List Column */}
 					<div className="flex flex-col flex-1 min-w-0 gap-6">
-						
+
 						{/* Header row */}
 						<div className="flex flex-col items-start w-full gap-4 border-b border-[#DCC8E022] pb-4">
 							<div className="w-full">
 								<h1 className="text-[#2E1A28] text-3xl md:text-4xl font-extrabold tracking-tight">Assignments</h1>
 								<p className="text-[#604868] text-sm mt-1 leading-relaxed">
-									{isTeacher 
+									{isTeacher
 										? "Manage assignments catalog and grade student submissions."
 										: "Stay on top of your academic journey."}
 								</p>
 							</div>
-							
+
 							<div className="flex flex-wrap items-center gap-3 shrink-0 w-full mt-2">
 								{isTeacher && (
-									<button 
+									<button
 										className="bg-[#E040A0] text-white py-2 px-5 rounded-full font-bold text-sm border-0 shadow-md hover:bg-[#c03080] transition flex items-center gap-2 cursor-pointer"
 										onClick={() => navigate("/add-assignment")}
 									>
@@ -333,11 +319,10 @@ export default function AssignmentList() {
 										<button
 											key={tab}
 											onClick={() => setActiveFilter(tab)}
-											className={`py-1.5 px-4 rounded-full font-bold text-[11px] border-0 transition ${
-												activeFilter === tab 
-													? "bg-white text-[#E040A0] shadow-sm" 
+											className={`py-1.5 px-4 rounded-full font-bold text-[11px] border-0 transition ${activeFilter === tab
+													? "bg-white text-[#E040A0] shadow-sm"
 													: "text-[#604868] hover:text-[#E040A0] bg-transparent cursor-pointer"
-											}`}
+												}`}
 										>
 											{tab}
 										</button>
@@ -356,7 +341,7 @@ export default function AssignmentList() {
 										<h3 className="text-[#2E1A28] text-lg font-bold flex items-center gap-2">
 											📝 Submissions ({activeFilter} List)
 										</h3>
-										
+
 										{filteredSubs.length === 0 ? (
 											<div className="text-gray-400 text-sm py-8 text-center bg-white rounded-[32px] border border-[#DCC8E088]">No submissions found matching filter.</div>
 										) : (
@@ -371,10 +356,10 @@ export default function AssignmentList() {
 															<p className="text-[#604868] font-semibold text-xs mt-1 flex items-center gap-2 truncate">
 																<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
 																Submitted: {new Date(sub.submittedAt).toLocaleDateString()}
-																<a 
-																	href={sub.fileUrl} 
-																	target="_blank" 
-																	rel="noopener noreferrer" 
+																<a
+																	href={sub.fileUrl}
+																	target="_blank"
+																	rel="noopener noreferrer"
 																	className="text-[#0096CC] hover:underline font-bold flex items-center gap-1 ml-2"
 																>
 																	<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -422,7 +407,7 @@ export default function AssignmentList() {
 									<h3 className="text-[#2E1A28] text-xl font-bold">
 										{isTeacher ? "Catalog of Published Assignments" : "Active Tasks & Homework"}
 									</h3>
-									
+
 									<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
 										{filteredTasks.length === 0 ? (
 											<div className="text-gray-400 text-sm py-12 text-center bg-white rounded-3xl border border-dashed border-[#DCC8E0] col-span-full">
@@ -465,7 +450,7 @@ export default function AssignmentList() {
 															<span className={`${getCategoryColors(task.courseCategory)} text-[10px] font-black tracking-widest uppercase py-1 px-3 rounded-full border`}>
 																{task.courseTitle}
 															</span>
-															
+
 															<div className="text-right">
 																<span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block leading-none">MAX SCORE</span>
 																<span className="text-xl font-black text-[#E040A0]" style={{ color: getCourseButtonColor(task.courseCategory) }}>{task.maxScore}</span>
@@ -486,7 +471,7 @@ export default function AssignmentList() {
 														<span className="text-[#604868] text-xs font-semibold flex items-center gap-1">
 															⏱ Due: {new Date(task.deadline).toLocaleDateString()}
 														</span>
-														
+
 														{/* For student submission statuses */}
 														{user?.role === 'student' && (
 															<div>
@@ -497,7 +482,7 @@ export default function AssignmentList() {
 																		<span className="text-[#7C52AA] text-xs font-bold bg-[#EEDCFF] py-1 px-3 rounded-full">Submitted</span>
 																	)
 																) : (
-																	<button 
+																	<button
 																		className={`${getCourseButtonColor(task.courseCategory)} text-white py-2 px-5 rounded-full font-bold text-xs border-0 transition shadow-sm cursor-pointer`}
 																		onClick={() => navigate("/submit-assignment", { state: { assignmentId: task.id, assignmentTitle: task.title } })}
 																	>
@@ -510,10 +495,10 @@ export default function AssignmentList() {
 												</div>
 											))
 										)}
-										
+
 										{/* Teacher "Publish New Assignment" dashed card */}
 										{isTeacher && (
-											<div 
+											<div
 												className="bg-[#FEF7FF]/50 p-6 rounded-[32px] border-2 border-dashed border-[#DCC8E0] hover:border-[#E040A0] transition flex flex-col justify-center items-center gap-3 cursor-pointer min-h-[200px]"
 												onClick={() => navigate("/add-assignment")}
 											>
@@ -531,13 +516,13 @@ export default function AssignmentList() {
 
 					{/* Right Sidebar Focus Mode & Motivation Column */}
 					<div className="flex flex-col w-72 md:w-80 gap-6 shrink-0">
-						
+
 						{/* Focus Mode Pomodoro Card */}
 						<div className={`${isTeacher ? 'bg-[#F080C0]' : 'bg-[#E040A0]'} rounded-[32px] p-6 text-center flex flex-col items-center gap-6 shadow-xl relative overflow-hidden`}>
 							<div className="absolute -right-16 -top-16 w-40 h-40 rounded-full bg-white/10 blur-xl"></div>
-							
+
 							<h3 className={`text-lg font-bold ${isTeacher ? 'text-[#2E1A28]' : 'text-white'}`}>Focus Mode</h3>
-							
+
 							{/* Glowing Timer Circle */}
 							<div className={`w-36 h-36 rounded-full border-[6px] ${isTeacher ? 'border-[#2E1A28]' : 'border-white/20'} flex items-center justify-center relative shadow-inner`}>
 								<span className={`text-4xl font-black tracking-widest relative z-10 ${isTeacher ? 'text-[#2E1A28]' : 'text-white'}`}>
@@ -549,13 +534,13 @@ export default function AssignmentList() {
 
 							{/* Actions */}
 							<div className="flex items-center gap-3 w-full">
-								<button 
+								<button
 									className={`flex-1 bg-white hover:bg-gray-50 py-3 rounded-full font-bold text-sm border-0 transition shadow-sm cursor-pointer ${isTeacher ? 'text-[#F080C0]' : 'text-[#E040A0]'}`}
 									onClick={() => setTimerRunning(!timerRunning)}
 								>
 									{timerRunning ? "Pause" : "Start"}
 								</button>
-								<button 
+								<button
 									className={`w-11 h-11 ${isTeacher ? 'bg-white/30 text-white hover:bg-white/40' : 'bg-white/20 text-white hover:bg-white/30'} rounded-full border-0 flex items-center justify-center cursor-pointer transition text-lg`}
 									onClick={handleResetTimer}
 								>
@@ -567,9 +552,9 @@ export default function AssignmentList() {
 						{/* Aesthetic Motivational Card */}
 						<div className="bg-white rounded-[32px] border border-solid border-[#DCC8E088] shadow-sm overflow-hidden flex flex-col">
 							<div className="h-36 relative bg-gray-150">
-								<img 
-									src="https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop&q=60" 
-									className="w-full h-full object-cover" 
+								<img
+									src="https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=500&auto=format&fit=crop&q=60"
+									className="w-full h-full object-cover"
 									alt="motivation plant"
 								/>
 							</div>
@@ -579,7 +564,7 @@ export default function AssignmentList() {
 									{isTeacher ? `Keep up the guidance, Coach!` : `Keep on learning, ${user?.name || "Mas Wowok"}!`}
 								</h4>
 								<p className="text-gray-400 text-[11px] leading-relaxed">
-									{isTeacher 
+									{isTeacher
 										? "Manage your dashboard metrics and grade assignments on time to motivate your student class cohort."
 										: "Your study schedule is set up for success today. Take breaks and remain focused."}
 								</p>
