@@ -1,0 +1,126 @@
+const assignmentService = require('./service');
+
+const getAssignmentsByCourse = async (req, res, next) => {
+  try {
+    const data = await assignmentService.getAssignmentsByCourse(req.params.courseId);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Data tugas berhasil diambil.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createAssignment = async (req, res, next) => {
+  try {
+    const data = await assignmentService.createAssignment(req.params.courseId, req.body, req.user.id, req.user.role);
+    res.status(201).json({
+      status: 'success',
+      code: '00',
+      message: 'Tugas berhasil dibuat.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateAssignment = async (req, res, next) => {
+  try {
+    const data = await assignmentService.updateAssignment(req.params.id, req.body, req.user.id, req.user.role);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Tugas berhasil diperbarui.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteAssignment = async (req, res, next) => {
+  try {
+    await assignmentService.deleteAssignment(req.params.id, req.user.id, req.user.role);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Tugas berhasil dihapus.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const submitAssignment = async (req, res, next) => {
+  try {
+    // req.file is populated by multer middleware
+    const { note } = req.body;
+    const data = await assignmentService.submitAssignment(req.params.id, req.user.id, req.file, note);
+    res.status(201).json({
+      status: 'success',
+      code: '00',
+      message: 'Tugas berhasil dikumpulkan.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getSubmissions = async (req, res, next) => {
+  try {
+    const data = await assignmentService.getSubmissions(req.params.id, req.user.id, req.user.role);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Data pengumpulan tugas berhasil diambil.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const gradeSubmission = async (req, res, next) => {
+  try {
+    const { score } = req.body;
+    const data = await assignmentService.gradeSubmission(req.params.submissionId, score, req.user.id, req.user.role);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Nilai berhasil diberikan.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getMySubmission = async (req, res, next) => {
+  try {
+    const data = await assignmentService.getMySubmission(req.params.id, req.user.id);
+    res.status(200).json({
+      status: 'success',
+      code: '00',
+      message: 'Data pengumpulan tugas berhasil diambil.',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getAssignmentsByCourse,
+  createAssignment,
+  updateAssignment,
+  deleteAssignment,
+  submitAssignment,
+  getSubmissions,
+  gradeSubmission,
+  getMySubmission
+};
