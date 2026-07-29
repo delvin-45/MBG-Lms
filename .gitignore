@@ -1,8 +1,9 @@
-﻿# Environment files
+# Environment & sensitive files
 .env
 .env.local
 .env.development
 .env.production
+jangan push/
 
 # Dependencies
 node_modules/

@@ -69,7 +69,7 @@ export default function Profile() {
 					{isAdmin ? (
 						<>
 							{/* Admin Sidebar Links */}
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/dashboard-admin")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/dashboard-admin")}>
 								<span className="text-lg mr-3">👥</span>
 								<span className="text-[#604868] text-sm font-medium" >
 									{"User Management"}
@@ -79,40 +79,40 @@ export default function Profile() {
 					) : (
 						<>
 							{/* Student/Teacher Sidebar Links */}
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/dashboard")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/dashboard")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
-									className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
+									src={"/Image (dashboard)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="dashboard"
 								/>
 								<span className="text-[#604868] text-sm font-medium" >
 									{"Dashboard"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/my-courses")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/my-courses")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
-									className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
+									src={"/Image (courses)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="courses"
 								/>
 								<span className="text-[#604868] text-sm font-medium" >
 									{"My Courses"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/assignments")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/assignments")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
-									className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
+									src={"/Image (assignments)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="assignments"
 								/>
 								<span className="text-[#604868] text-sm font-medium" >
 									{"Assignments"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/academic-progress")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/academic-progress")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
-									className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
+									src={"/Image (progress)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="progress"
 								/>
 								<span className="text-[#604868] text-sm font-medium" >
@@ -123,10 +123,10 @@ export default function Profile() {
 					)}
 
 					{/* Profile Link (Active) */}
-					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full shadow-sm" onClick={() => navigate("/profile")}>
+					<div className="flex items-center bg-[#F080C0] py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full shadow-sm" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
-							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (profile)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="profile"
 						/>
 						<span className="text-[#2E1A28] text-sm font-bold" >
@@ -135,10 +135,10 @@ export default function Profile() {
 					</div>
 
 					{/* Settings Link */}
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/settings")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50 transition-colors" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
-							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (settings)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="settings"
 						/>
 						<span className="text-[#604868] text-sm font-medium" >
@@ -146,7 +146,7 @@ export default function Profile() {
 						</span>
 					</div>
 
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full mt-auto text-red-500 hover:bg-red-50 font-bold transition-colors" onClick={() => { logout(); navigate('/'); }}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full mt-auto text-red-500 hover:bg-red-50 font-bold transition-colors" onClick={() => { logout(); navigate('/'); }}>
 						<span className="text-sm" >
 							{"Log Out"}
 						</span>
@@ -161,7 +161,7 @@ export default function Profile() {
 					<div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "ganjar 18%"}</span>
 						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+							src={user?.avatarUrl || "/assets/default-avatar.png"}
 							className="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm"
 							alt="avatar"
 						/>
@@ -177,7 +177,7 @@ export default function Profile() {
 							{/* Premium Profile Avatar with gradient border */}
 							<div className="relative w-[120px] h-[120px] min-w-[120px] min-h-[120px] max-w-[120px] max-h-[120px] rounded-full p-[3px] bg-gradient-to-tr from-[#7C52AA] via-[#E040A0] to-[#E040A0] flex-shrink-0 flex items-center justify-center shadow-lg">
 								<img
-									src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+									src={user?.avatarUrl || "/assets/default-avatar.png"}
 									className="w-full h-full object-cover rounded-full border-[3px] border-white flex-shrink-0"
 									alt="profile big"
 								/>

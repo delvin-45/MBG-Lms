@@ -4,11 +4,13 @@ import { useAuth } from './AuthContext';
 
 const CourseContext = createContext();
 
+// Penyedia State Global Kursus (Daftar Kelas, Tambah/Edit/Hapus Kursus & Materi)
 export function CourseProvider({ children }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
+  // Fungsi Ambil Daftar Kursus: Tembak GET /courses dengan parameter pencarian/filter
   const fetchCourses = async (filters = {}) => {
     if (!user) return;
     setLoading(true);
@@ -22,30 +24,40 @@ export function CourseProvider({ children }) {
       const queryString = params.toString();
       const response = await api.get(`/courses${queryString ? `?${queryString}` : ''}`);
       if (response.status === 'success' && response.data) {
-        // Handle paginated structure (since backend /courses returns { data: [...], meta: {...} })
+        const storedThumbnails = JSON.parse(localStorage.getItem('mbg_thumbnails') || '{}');
         const courseList = Array.isArray(response.data) ? response.data : (response.data.data || []);
-        setCourses(courseList);
+        setCourses(courseList.map(c => {
+          if (storedThumbnails[c.id]) c.thumbnail_url = storedThumbnails[c.id];
+          return c;
+        }));
       }
     } catch (err) {
-      console.error('Failed to fetch courses:', err);
+      console.error('Gagal mengambil data kursus:', err);
     } finally {
       setLoading(false);
     }
   };
 
-    const addCourse = async (courseData) => {
-        try {
-            const res = await api.post('/courses', courseData);
-            // res is the full JSON: { status, data: { id, title, ... } }
-            if (res.status === 'success' && res.data) {
-                setCourses(prev => [...prev, res.data]);
-            }
-            return res; // Return full response so callers can access res.data.id
-        } catch (error) {
-            console.error('Error adding course:', error.response?.data || error.message);
-            throw error;
+  // Fungsi Tambah Kursus Baru oleh Pengajar (POST /courses)
+  const addCourse = async (courseData, customThumbnail = null) => {
+    try {
+      const res = await api.post('/courses', courseData);
+      if (res.status === 'success' && res.data) {
+        if (customThumbnail) {
+          const stored = JSON.parse(localStorage.getItem('mbg_thumbnails') || '{}');
+          stored[res.data.id] = customThumbnail;
+          localStorage.setItem('mbg_thumbnails', JSON.stringify(stored));
+          res.data.thumbnail_url = customThumbnail;
         }
-    };
+        // Langsung tambahkan kursus baru ke state memori agar UI ter-update instan tanpa reload
+        setCourses(prev => [...prev, res.data]);
+      }
+      return res;
+    } catch (error) {
+      console.error('Gagal menambah kursus:', error.response?.data || error.message);
+      throw error;
+    }
+  };
 
   const addMaterial = async (courseId, materialData) => {
     try {
@@ -70,11 +82,23 @@ export function CourseProvider({ children }) {
     }
   };
 
-  const updateCourse = async (courseId, courseData) => {
+  const updateCourse = async (courseId, courseData, customThumbnail = null) => {
     try {
       const res = await api.put(`/courses/${courseId}`, courseData);
       if (res.status === 'success' && res.data) {
-        setCourses(prev => prev.map(c => c.id === courseId ? { ...c, ...res.data } : c));
+        if (customThumbnail) {
+          const stored = JSON.parse(localStorage.getItem('mbg_thumbnails') || '{}');
+          stored[courseId] = customThumbnail;
+          localStorage.setItem('mbg_thumbnails', JSON.stringify(stored));
+        }
+        setCourses(prev => prev.map(c => {
+          if (c.id === courseId) {
+            const updated = { ...c, ...res.data };
+            if (customThumbnail) updated.thumbnail_url = customThumbnail;
+            return updated;
+          }
+          return c;
+        }));
       }
       return res;
     } catch (error) {

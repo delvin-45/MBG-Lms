@@ -26,7 +26,7 @@ export const options = {
 };
 
 const BASE_URL = 'http://localhost:8080/api/v1';
-const PERFORMATIVE_MODE = true; // True = Bypass Rate Limiter (Skenario Sukses), False = Rate Limiter Aktif (Skenario Gagal/Diblokir)
+const PERFORMATIVE_MODE = false; // True = Bypass Rate Limiter (Skenario Sukses), False = Rate Limiter Aktif (Skenario Gagal/Diblokir)
 
 // Data Akun 
 const USERS = [
@@ -34,7 +34,7 @@ const USERS = [
   { email: 'ganjar@mbg.com', password: 'anjayy' }, 
 ];
 
-// [TAHAP 1: K6 MENGIRIM KATA SANDI VIP]
+// [TAHAP 1: K6 MENGIRIM 
 // Fungsi ini bertugas menyelipkan "Kata Sandi Rahasia" ke dalam setiap request
 // agar Rate Limiter membiarkan kita lewat tanpa diblokir.
 function addPerformativeHeader(headers = {}) {

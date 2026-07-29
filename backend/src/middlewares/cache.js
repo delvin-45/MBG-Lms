@@ -10,50 +10,39 @@
 
 const { redisClient } = require('../config/redis');
 
-const CACHE_TTL = 60; // seconds
+// Waktu Simpan Cache: 60 detik untuk endpoint GET (bisa kedaluwarsa otomatis)
+const CACHE_TTL = 60; // detik
 
-/**
- * Get a cached JSON value.
- * Returns parsed object, or null on miss / Redis error.
- */
+// 1. Ambil data dari memori Redis. Jika Redis mati/error, kembalikan null secara diam-diam (Silent Fail)
 const getCached = async (key) => {
   try {
     const raw = await redisClient.get(key);
     return raw ? JSON.parse(raw) : null;
   } catch {
-    return null;
+    return null; // Redis error dianggap Cache Miss, aplikasi tetap jalan via DB
   }
 };
 
-/**
- * Store a JSON value in cache with TTL.
- * Fails silently on Redis error.
- */
+// 2. Simpan data ke memori Redis selama 60 detik. Gagal secara diam-diam jika Redis mati.
 const setCache = async (key, data) => {
   try {
     await redisClient.set(key, JSON.stringify(data), { EX: CACHE_TTL });
   } catch {
-    // fail silently — cache is best-effort
+    // Silent fail - Redis bersifat Best-Effort Caching
   }
 };
 
-/**
- * Delete one or more cache keys.
- * Fails silently on Redis error.
- */
+// 3. Hapus 1 atau beberapa key cache spesifik di Redis
 const delCache = async (...keys) => {
   try {
     const flat = keys.flat().filter(Boolean);
     if (flat.length > 0) await redisClient.del(flat);
   } catch {
-    // fail silently
+    // Silent fail
   }
 };
 
-/**
- * Delete all keys matching a glob pattern using SCAN (non-blocking).
- * Safer than KEYS for production workloads.
- */
+// 4. Hapus seluruh key cache berdasarkan pola (misal 'courses:*') menggunakan Redis SCAN (Non-Blocking)
 const clearPattern = async (pattern) => {
   try {
     let cursor = 0;

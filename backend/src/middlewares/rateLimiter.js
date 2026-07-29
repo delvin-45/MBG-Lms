@@ -30,7 +30,7 @@ const apiRateLimiter = rateLimit({
   
   // Logika di bawah ini yang memutuskan apakah pengunjung boleh lolos (Bypass) atau dihitung.
   skip: (req) => {
-    // 1. Cek mode sakelar utama dari file .env (Jalur VIP Global)
+    // 1. Cek mode sakelar utama dari file .env 
     if (process.env.PERFORMANCE_TEST_MODE === "true") return true;
 
     // 2. Cek apakah ada  "x-performative-mode" yang berisi kata sandi "mbg-stress-bypass"

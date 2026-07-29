@@ -2,11 +2,12 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
+// PostgreSQL Connection Pool — Menyiapkan 20 koneksi siap pakai agar tahan Stress Test 500 VU
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 20,                   // match k6 VU count for stress tests
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000
+  max: 20,                   // Maksimal 20 koneksi simultan terbuka di RAM
+  idleTimeoutMillis: 30000,  // Lepas koneksi yang menganggur selama 30 detik
+  connectionTimeoutMillis: 2000 // Batas antre 2 detik sebelum timeout
 });
 
 pool.on('connect', () => {
@@ -17,9 +18,10 @@ pool.on('error', (err) => {
   console.error('Unexpected database pool error', err);
 });
 
-// Schema definition
+// Inisialisasi Skema Tabel (DDL) & Fitur Auto-Retry saat Booting
 const initDb = async (retries = 5, delay = 2000) => {
   let client;
+  // Coba hubungi PostgreSQL hingga 5 kali. Cegah server crash kalau DB Docker belum siap.
   while (retries > 0) {
     try {
       client = await pool.connect();

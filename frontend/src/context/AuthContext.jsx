@@ -3,12 +3,15 @@ import { api } from '../services/api';
 
 const AuthContext = createContext();
 
+// Penyedia State Global Autentikasi (User, Login, Logout, Register)
 export function AuthProvider({ children }) {
+  // Inisialisasi state user dari localStorage saat aplikasi pertama kali dibuka
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
     return saved ? JSON.parse(saved) : null;
   });
 
+  // Ambil data profil terbaru dari backend begitu halaman di-refresh untuk menyinkronkan foto avatar
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (token) {
@@ -17,7 +20,6 @@ export function AuthProvider({ children }) {
           if (res.status === 'success' && res.data) {
             setUser(prev => {
               if (!prev) return null;
-              // Only update if avatarUrl is different to prevent unnecessary re-renders
               if (prev.avatarUrl !== res.data.avatarUrl) {
                 return { ...prev, avatarUrl: res.data.avatarUrl };
               }
@@ -25,20 +27,21 @@ export function AuthProvider({ children }) {
             });
           }
         })
-        .catch(err => console.warn('Failed to restore avatar from profile on mount:', err));
+        .catch(err => console.warn('Gagal menyinkronkan avatar profil:', err));
     }
   }, []);
 
+  // Fungsi Login: Tembak POST /auth/login, simpan token JWT, dan set state user
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     if (response.status === 'success' && response.data) {
       const { accessToken, refreshToken, user: backendUser } = response.data;
 
-      // Store tokens
+      // Simpan token autentikasi di memori browser
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
 
-      // Map backendUser for backward compatibility (ensure name is set)
+      // Pemetaan objek user agar cocok dengan komponen UI
       const mappedUser = {
         id: backendUser.id,
         name: backendUser.fullName,

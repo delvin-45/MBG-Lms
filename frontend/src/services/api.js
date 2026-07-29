@@ -1,20 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
+// Fungsi utama pemicu HTTP Request ke Backend (Single Gateway)
 export async function request(endpoint, options = {}) {
-  // Destructure so we can handle headers and body separately
   const { headers: extraHeaders, body, ...restOptions } = options;
 
   const headers = {};
 
-  // Only set application/json if we are NOT sending FormData
-  // For FormData, we must NOT set Content-Type at all — the browser sets it with the boundary
+  // Jika payload BUKAN FormData (bukan upload file), set format JSON biasa.
+  // Khusus FormData, Content-Type sengaja dikosongkan agar browser otomatis buat boundary.
   if (!(body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
-    // Merge any extra headers only for non-FormData requests
     Object.assign(headers, extraHeaders || {});
   }
 
-  // Inject Bearer token
+  // Otomatis tempelkan token JWT dari localStorage jika user sudah login
   const token = localStorage.getItem('accessToken');
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -26,11 +25,11 @@ export async function request(endpoint, options = {}) {
     headers
   });
 
-  // Handle Token Expiration and Refresh (once per request)
+  // Jika Token expired (Error 401), coba minta token baru pakai Refresh Token secara otomatis
   if (response.status === 401 && !options._retry) {
     const refreshToken = localStorage.getItem('refreshToken');
     if (refreshToken) {
-      options._retry = true;
+      options._retry = true; // Tandai agar tidak looping terus
       try {
         const refreshResponse = await fetch(`${API_URL}/auth/refresh-token`, {
           method: 'POST',
@@ -41,10 +40,11 @@ export async function request(endpoint, options = {}) {
         if (refreshResponse.ok) {
           const refreshData = await refreshResponse.json();
           if (refreshData.status === 'success' && refreshData.data) {
+            // Simpan token baru
             localStorage.setItem('accessToken', refreshData.data.accessToken);
             localStorage.setItem('refreshToken', refreshData.data.refreshToken);
             
-            // Retry original request with new token
+            // Ulangi request asli yang sempat gagal tadi pakai token baru
             headers['Authorization'] = `Bearer ${refreshData.data.accessToken}`;
             response = await fetch(`${API_URL}${endpoint}`, {
               ...restOptions,
@@ -53,21 +53,22 @@ export async function request(endpoint, options = {}) {
             });
           }
         } else {
-          // Token renewal failed, log out user
+          // Jika refresh token juga hangus -> Paksa user keluar ke halaman login
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
           window.location.href = '/login';
         }
       } catch (err) {
-        console.error('Failed to refresh authentication token:', err);
+        console.error('Gagal memperbarui token autentikasi:', err);
       }
     }
   }
 
+  // Tangkap pesan error dari backend agar tidak crash
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Something went wrong' }));
-    throw new Error(error.message || 'Request failed');
+    const error = await response.json().catch(() => ({ message: 'Terjadi kesalahan sistem' }));
+    throw new Error(error.message || 'Gagal memproses permintaan');
   }
 
   return response.json();

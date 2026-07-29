@@ -43,10 +43,10 @@ export default function AddCourse() {
 			}
 
 			if (isEditMode) {
-				await updateCourse(editCourse.id, courseFormData);
+				await updateCourse(editCourse.id, courseFormData, thumbnail);
 				alert("Course updated successfully!");
 			} else {
-				const res = await addCourse(courseFormData);
+				const res = await addCourse(courseFormData, thumbnail);
 				const courseId = res?.data?.id;
 				if (!courseId) throw new Error('Failed to get course ID from response');
 				
@@ -335,8 +335,8 @@ export default function AddCourse() {
 							<label className="text-[#604868] text-xs font-bold uppercase tracking-wider ml-1">Course Thumbnail</label>
 							<div className="flex flex-col items-center justify-center border-2 border-dashed border-[#DCC8E0] bg-[#FBF2FB] rounded-[32px] p-6 text-center cursor-pointer hover:bg-[#F2E8F2] transition relative h-32">
 								<img 
-									src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pcnzhulp_expires_30_days.png"
-									className="w-8 h-8 object-fill mb-2 opacity-75"
+									src="/Image (deadline icon).png"
+									className="w-8 h-8 object-contain mb-2 opacity-75"
 									alt="upload"
 								/>
 								<div className="text-sm font-bold text-[#E040A0]">Drag and drop or click to upload</div>
@@ -346,8 +346,13 @@ export default function AddCourse() {
 									className="absolute inset-0 opacity-0 cursor-pointer"
 									onChange={(e) => {
 										if (e.target.files && e.target.files[0]) {
-											setThumbnail(URL.createObjectURL(e.target.files[0]));
-											setThumbnailFile(e.target.files[0]);
+											const file = e.target.files[0];
+											const reader = new FileReader();
+											reader.onloadend = () => {
+												setThumbnail(reader.result);
+											};
+											reader.readAsDataURL(file);
+											setThumbnailFile(file);
 										}
 									}}
 								/>

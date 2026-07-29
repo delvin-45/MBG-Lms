@@ -96,67 +96,67 @@ export default function CourseList() {
 					</span>
 				</div>
 				<div className="flex flex-col items-start px-4 gap-1 w-full flex-1">
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
-							className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (dashboard)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="dashboard"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Dashboard"}
 						</span>
 					</div>
-					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full text-[#2E1A28] font-bold" onClick={() => navigate("/my-courses")}>
+					<div className="flex items-center bg-[#F080C0] py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full text-[#2E1A28] font-bold" onClick={() => navigate("/my-courses")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
-							className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (courses)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="courses"
 						/>
 						<span className="text-sm" >
 							{"My Courses"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
-							className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (assignments)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="assignments"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Assignments"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
-							className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (progress)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="progress"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Progress"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
-							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (profile)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="profile"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Profile"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
-							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (settings)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="settings"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Settings"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
 						<span className="text-sm" >
 							{"Log Out"}
 						</span>

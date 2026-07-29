@@ -124,67 +124,67 @@ export default function AcademicProgress() {
 					</span>
 				</div>
 				<div className="flex flex-col items-start px-4 gap-1 w-full flex-1">
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
-							className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (dashboard)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="dashboard"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Dashboard"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
-							className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (courses)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="courses"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"My Courses"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
-							className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (assignments)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="assignments"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Assignments"}
 						</span>
 					</div>
-					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full text-[#2E1A28] font-bold" onClick={() => navigate("/academic-progress")}>
+					<div className="flex items-center bg-[#F080C0] py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full text-[#2E1A28] font-bold" onClick={() => navigate("/academic-progress")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
-							className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (progress)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="progress"
 						/>
 						<span className="text-sm" >
 							{"Progress"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
-							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (profile)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="profile"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Profile"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
-							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (settings)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="settings"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Settings"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
 						<span className="text-sm" >
 							{"Log Out"}
 						</span>
@@ -199,7 +199,7 @@ export default function AcademicProgress() {
 					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
 						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+							src={user?.avatarUrl || "/assets/default-avatar.png"}
 							className="w-10 h-10 object-cover rounded-full border border-gray-100"
 							alt="avatar"
 						/>
@@ -280,11 +280,20 @@ export default function AcademicProgress() {
 										</div>
 
 										{/* Line Wave Chart */}
-										<div className="w-full bg-cover bg-center pt-[150px] px-4 mb-8 relative"
-											style={{ backgroundImage: 'url(https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/8j4cbqjf_expires_30_days.png)' }}>
-											<div className="flex justify-between items-center w-full absolute bottom-0 left-0 px-6 pb-2">
+										<div className="w-full relative pt-2 px-2 mb-8 flex flex-col items-center">
+											<svg className="w-full h-[150px] overflow-visible mb-6" viewBox="0 0 600 150" preserveAspectRatio="none">
+												<defs>
+													<linearGradient id="velocityWave" x1="0" y1="0" x2="0" y2="1">
+														<stop offset="0%" stopColor="#0096CC" stopOpacity="0.18" />
+														<stop offset="100%" stopColor="#0096CC" stopOpacity="0.0" />
+													</linearGradient>
+												</defs>
+												<path d="M 0,110 C 80,40 120,40 200,85 C 280,130 350,20 440,20 C 530,20 560,130 600,10 L 600,150 L 0,150 Z" fill="url(#velocityWave)" />
+												<path d="M 0,110 C 80,40 120,40 200,85 C 280,130 350,20 440,20 C 530,20 560,130 600,10" fill="none" stroke="#0096CC" strokeWidth="4.5" strokeLinecap="round" />
+											</svg>
+											<div className="flex justify-between items-center w-full px-4">
 												{["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(day => (
-													<span key={day} className="text-[#604868] text-[10px] font-bold">{day}</span>
+													<span key={day} className="text-[#604868] text-[11px] font-bold tracking-wider">{day}</span>
 												))}
 											</div>
 										</div>
@@ -388,16 +397,15 @@ export default function AcademicProgress() {
 															const grade = getGradeLetter(prog.progressPercentage);
 															const isLesson = prog.submittedAssignments === 0;
 															const themes = [
-																{ bg: 'bg-[#FBF2FB]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#E040A0]', pillBg: 'bg-[#FFD6EE]', pillText: 'text-[#A02070]', iconImg: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/mq8krafh_expires_30_days.png' },
-																{ bg: 'bg-[#F0F9FF]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#0096CC]', pillBg: 'bg-[#C8EAFF]', pillText: 'text-[#005580]', iconImg: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/f988f0jj_expires_30_days.png' },
-																{ bg: 'bg-[#F5F3F9]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#7C52AA]', pillBg: 'bg-[#EEDCFF]', pillText: 'text-[#4A3068]', iconImg: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/rvz3g3nv_expires_30_days.png' }
+																{ bg: 'bg-[#FBF2FB]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#E040A0]', pillBg: 'bg-[#FFD6EE]', pillText: 'text-[#A02070]', iconImg: '/assets/icon-stat-pink.png' },
+																{ bg: 'bg-[#F0F9FF]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#0096CC]', pillBg: 'bg-[#C8EAFF]', pillText: 'text-[#005580]', iconImg: '/assets/icon-stat-blue.png' },
+																{ bg: 'bg-[#F5F3F9]', iconBg: 'bg-[#FFFFFF]', text: 'text-[#7C52AA]', pillBg: 'bg-[#EEDCFF]', pillText: 'text-[#4A3068]', iconImg: '/assets/icon-stat-purple.png' }
 															];
 															const theme = themes[idx % themes.length];
 
 															return (
 																<div key={prog.courseId} className={`grid grid-cols-[2fr_1fr_1fr_0.5fr] items-center ${theme.bg} py-3 px-4 rounded-[48px]`}>
-																	<div className="flex items-center gap-4">
-																		<img src={theme.iconImg} className="h-8 object-contain" alt="icon" />
+																	<div className="flex items-center">
 																		<span className="text-[#2E1A28] text-sm font-bold truncate pr-4">{prog.courseTitle}</span>
 																	</div>
 																	<div className="flex justify-center">
@@ -424,8 +432,7 @@ export default function AcademicProgress() {
 														<>
 															{/* Row 1 */}
 															<div className="grid grid-cols-[2fr_1fr_1fr_0.5fr] items-center bg-[#FBF2FB] py-3 px-4 rounded-[48px]">
-																<div className="flex items-center gap-4">
-																	<img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/mq8krafh_expires_30_days.png" className="h-8 object-contain" alt="icon" />
+																<div className="flex items-center">
 																	<span className="text-[#2E1A28] text-sm font-bold truncate pr-4">Advanced Thermodynamics Final</span>
 																</div>
 																<div className="flex justify-center">
@@ -443,8 +450,7 @@ export default function AcademicProgress() {
 
 															{/* Row 2 */}
 															<div className="grid grid-cols-[2fr_1fr_1fr_0.5fr] items-center bg-[#F0F9FF] py-3 px-4 rounded-[48px]">
-																<div className="flex items-center gap-4">
-																	<img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/f988f0jj_expires_30_days.png" className="h-8 object-contain" alt="icon" />
+																<div className="flex items-center">
 																	<span className="text-[#2E1A28] text-sm font-bold truncate pr-4">Data Structures & Algorithms</span>
 																</div>
 																<div className="flex justify-center">
@@ -462,8 +468,7 @@ export default function AcademicProgress() {
 
 															{/* Row 3 */}
 															<div className="grid grid-cols-[2fr_1fr_1fr_0.5fr] items-center bg-[#F5F3F9] py-3 px-4 rounded-[48px]">
-																<div className="flex items-center gap-4">
-																	<img src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/rvz3g3nv_expires_30_days.png" className="h-8 object-contain" alt="icon" />
+																<div className="flex items-center">
 																	<span className="text-[#2E1A28] text-sm font-bold truncate pr-4">Advanced French Lit Essay</span>
 																</div>
 																<div className="flex justify-center">

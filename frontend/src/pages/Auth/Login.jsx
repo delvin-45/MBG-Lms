@@ -12,24 +12,22 @@ export default function Login() {
 	const [error, setError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 
+	// Handler Eksekusi Login: Panggil AuthContext.login, tampilkan Splash Screen 1.8s, lalu redirect sesuai role
 	const handleLogin = async () => {
 		setError('');
 		try {
+			// Tembak API Login via AuthContext
 			const loggedUser = await login(email, password);
-			setShowSplash(true);
+			setShowSplash(true); // Tampilkan animasi Splash Screen
 
-			// Stage loading messages for transition effects
-			setTimeout(() => {
-				setLoadingText("Configuring workspace...");
-			}, 8000);
-
+			// Beri jeda animasi 1.8 detik sebelum pindah halaman
 			setTimeout(() => {
 				if (loggedUser.role === 'admin') {
-					navigate('/dashboard-admin');
+					navigate('/dashboard-admin'); // Admin ke Dashboard Admin
 				} else {
-					navigate('/dashboard');
+					navigate('/dashboard'); // Student/Teacher ke Dashboard Biasa
 				}
-			}, 1800); // 1.8 seconds classy splash delay
+			}, 1800);
 		} catch (err) {
 			setError(err.message || 'Email/username atau password salah');
 		}
@@ -86,7 +84,7 @@ export default function Login() {
 					<div className="w-full max-w-[430px] bg-white rounded-[32px] p-6 sm:p-8 border border-[#E040A01A] shadow-[0_20px_50px_rgba(224,64,160,0.12)] flex flex-col items-center gap-5 my-auto">
 						{/* Logo */}
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/34x7tigk_expires_30_days.png"}
+							src={"/logo.png"}
 							className="w-[75px] h-[92px] object-contain cursor-pointer"
 							alt="brand logo"
 							onClick={() => navigate("/")}
@@ -120,7 +118,7 @@ export default function Login() {
 								</label>
 								<div className="flex items-center bg-[#FBF2FB] py-3 px-4 gap-3 rounded-full border border-[#DCC8E0] focus-within:border-[#E040A0] focus-within:ring-2 focus-within:ring-[#E040A022] transition w-full">
 									<img
-										src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/4ajxz4oh_expires_30_days.png"}
+										src={"/login Image (email).png"}
 										className="w-4 h-5 object-contain opacity-70"
 										alt="email"
 									/>
@@ -150,7 +148,7 @@ export default function Login() {
 								</div>
 								<div className="flex items-center bg-[#FBF2FB] py-3 px-4 gap-3 rounded-full border border-[#DCC8E0] focus-within:border-[#E040A0] focus-within:ring-2 focus-within:ring-[#E040A022] transition w-full">
 									<img
-										src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/20gfakqm_expires_30_days.png"}
+										src={"/login Image (password).png"}
 										className="w-4 h-5 object-contain opacity-70"
 										alt="password"
 									/>
@@ -198,7 +196,7 @@ export default function Login() {
 							>
 								<span>Sign In</span>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/l4luhnlf_expires_30_days.png"}
+									src={"/login Image (arrow icon).png"}
 									className="w-4 h-4 object-contain"
 									alt="arrow icon"
 								/>
@@ -221,7 +219,7 @@ export default function Login() {
 								onClick={() => alert("Fitur Google Sign-In segera hadir!")}
 							>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/ys6yrnam_expires_30_days.png"}
+									src={"/Image (google).png"}
 									className="w-4 h-4 object-contain"
 									alt="google"
 								/>
@@ -232,7 +230,7 @@ export default function Login() {
 								onClick={() => alert("Fitur Apple Sign-In segera hadir!")}
 							>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/qorhxdkl_expires_30_days.png"}
+									src={"/Image (apple).png"}
 									className="w-4 h-4 object-contain"
 									alt="apple"
 								/>

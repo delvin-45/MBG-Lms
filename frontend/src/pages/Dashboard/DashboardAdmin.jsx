@@ -19,6 +19,7 @@ export default function DashboardAdmin() {
   const [totalUsersCount, setTotalUsersCount] = useState(0);
   const [activeStudentsCount, setActiveStudentsCount] = useState(0);
 
+  // Fungsi Fetch Data Pengguna: Tembak GET /users dengan query params pencarian, filter role, & paginasi
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -33,11 +34,11 @@ export default function DashboardAdmin() {
       if (res.status === 'success' && res.data) {
         setUsersList(res.data);
         if (res.meta) {
-          setMeta(res.meta);
+          setMeta(res.meta); // Simpan metadata paginasi (total Halaman & total Data)
         }
       }
     } catch (err) {
-      console.error('Failed to load users:', err);
+      console.error('Gagal memuat daftar pengguna:', err);
     } finally {
       setLoading(false);
     }

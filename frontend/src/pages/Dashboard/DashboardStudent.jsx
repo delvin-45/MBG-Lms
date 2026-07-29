@@ -105,67 +105,67 @@ export default function DashboardStudent() {
 					</span>
 				</div>
 				<div className="flex flex-col items-start px-4 gap-1 w-full flex-1">
-					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full" onClick={() => navigate("/dashboard")}>
+					<div className="flex items-center bg-[#F080C0] py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full" onClick={() => navigate("/dashboard")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
-							className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (dashboard)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="dashboard"
 						/>
 						<span className="text-[#2E1A28] text-sm font-bold" >
 							{"Dashboard"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
-							className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
+							src={"/Image (courses)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="courses"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"My Courses"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
-							className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (assignments)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="assignments"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Assignments"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
-							className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (progress)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="progress"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Progress"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
-							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (profile)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="profile"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Profile"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
-							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (settings)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="settings"
 						/>
 						<span className="text-[#604868] text-sm" >
 							{"Settings"}
 						</span>
 					</div>
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
 						<span className="text-sm" >
 							{"Log Out"}
 						</span>
@@ -180,7 +180,7 @@ export default function DashboardStudent() {
 					<div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "Alex Sterling"}</span>
 						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+							src={user?.avatarUrl || "/assets/default-avatar.png"}
 							className="w-10 h-10 object-cover rounded-full border border-gray-100"
 							alt="avatar"
 						/>
@@ -282,8 +282,8 @@ export default function DashboardStudent() {
 												}}>
 												<div className="flex items-center w-full">
 													<img
-														src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/z07ushx4_expires_30_days.png"}
-														className="w-12 h-12 mr-3 object-fill"
+														src={"/Image (course icon)_margin.png"}
+														className="w-12 h-12 mr-3 object-contain shrink-0"
 														alt="course icon"
 													/>
 													<div className="flex flex-col items-start">
@@ -305,8 +305,8 @@ export default function DashboardStudent() {
 																{`${progressVal}%`}
 															</span>
 														</div>
-														<div className="w-full bg-[#ECE2EC] h-3 rounded-[9999px] overflow-hidden">
-															<div className="h-full rounded-[9999px]"
+														<div className="w-full bg-[#ECE2EC] h-3  overflow-hidden">
+															<div className="h-full "
 																style={{
 																	width: `${progressVal}%`,
 																	backgroundColor: getProgressColor(course.category)
@@ -315,13 +315,11 @@ export default function DashboardStudent() {
 														</div>
 													</div>
 												)}
-												<button className="flex justify-center bg-transparent py-3.5 w-full rounded-[9999px] border-2 border-solid font-bold text-sm"
-													style={{
-														borderColor: getProgressColor(course.category),
-														color: getProgressColor(course.category)
-													}}
-													onClick={() => navigate("/course-detail", { state: { courseId: course.id } })}>
-													{user?.role === 'student' ? "Resume Learning" : "Manage Course"}
+												<button 
+													className="w-full py-2.5 rounded-full border-2 border-[#C6519E] text-[#C6519E] font-bold text-sm bg-white hover:bg-[#C6519E] hover:text-white transition cursor-pointer mt-2"
+													onClick={() => navigate("/course-detail", { state: { courseId: course.id } })}
+												>
+													Resume Learning
 												</button>
 											</div>
 										);
@@ -338,8 +336,8 @@ export default function DashboardStudent() {
 								{"Deadlines"}
 							</span>
 							<img
-								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pcnzhulp_expires_30_days.png"}
-								className="w-[26px] h-[31px] object-fill"
+								src={"/Image (deadline icon).png"}
+								className="w-7 h-7 object-contain shrink-0"
 								alt="deadline icon"
 							/>
 						</div>
@@ -389,13 +387,12 @@ export default function DashboardStudent() {
 							)}
 						</div>
 
-						<button className="flex items-center justify-center bg-[#E040A0] text-white py-3.5 w-full gap-2 rounded-full border-0 font-bold text-sm shadow-[04px16px0rgba(224,64,160,0.3)] hover:bg-[#c03080] transition"
+						<button 
+							className="flex items-center justify-center bg-[#C6519E] text-white py-3.5 w-full gap-2 rounded-full border-0 font-bold text-sm shadow-[0px_4px_16px_rgba(198,81,158,0.3)] hover:bg-[#b0408b] hover:scale-[1.02] active:scale-95 transition cursor-pointer"
 							onClick={() => navigate("/assignments")}>
-							<img
-								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/zntxl7q1_expires_30_days.png"}
-								className="w-[11px] h-[11px] rounded-[9999px] object-fill"
-								alt="add"
-							/>
+							<svg className="w-4 h-4 shrink-0 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+								<path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+							</svg>
 							<span>{"Add New Task"}</span>
 						</button>
 					</div>

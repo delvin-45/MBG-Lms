@@ -20,29 +20,30 @@ const path = require('path');
 
 const app = express();
 
-// Trust Nginx reverse proxy - required for correct IP identification behind docker
+// 1. Percayai Proxy Nginx agar IP asli pengunjung terbaca di Docker
 app.set('trust proxy', 1);
 
-// Security: HTTP security headers (XSS, Clickjacking, MIME, HSTS, CSP, Referrer)
+// 2. Proteksi Header Keamanan HTTP (XSS, Clickjacking, MIME, CSP)
 app.use(helmet());
 
-// Performance: gzip compression for JSON responses
+// 3. Kompresi respons JSON dengan Gzip untuk menghemat bandwith
 app.use(compression());
 
+// 4. Izinkan Cross-Origin Resource Sharing (CORS) dari frontend
 app.use(cors());
-// Body size limit: 10MB — allows base64 avatar uploads up to 10MB
+
+// 5. Batas ukuran payload JSON 10MB untuk mendukung upload foto Base64
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve uploaded assignment files statically
+// 6. Menyediakan akses statis ke folder file tugas/avatar yang diunggah
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// [TAHAP 2: SATPAM DITEMPATKAN DI PINTU DEPAN]
-// Semua orang/request dari internet yang mau masuk ke jalur /api/ 
-// wajib melewati dan diperiksa oleh satpam (apiRateLimiter) ini.
+// [SATPAM PINTU UTAMA API]
+// Semua request yang diawali teks '/api/' WAJIB dicegat oleh apiRateLimiter
 app.use('/api/', apiRateLimiter);
 
-// Prevent browser caching for all API routes
+// Memaksa browser untuk TIDAK menyimpan cache data API
 app.use('/api/', (req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -51,7 +52,7 @@ app.use('/api/', (req, res, next) => {
   next();
 });
 
-// Basic Health Check
+// Endpoint Health Check untuk mengecek status server
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -63,13 +64,14 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
-// Prometheus Metrics Endpoint
+// Endpoint Prometheus Metrics untuk pemantauan Grafana
 app.get('/metrics', async (req, res) => {
   res.set('Content-Type', promClient.register.contentType);
   res.end(await promClient.register.metrics());
 });
 
-// Mount routers
+// [DEKLARASI RUTE UTAMA BERSAMA PREFIX /api/v1/...]
+// Di sinilah seluruh rute modul didaftarkan dan dihubungkan ke Express
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/courses', courseRouter);
@@ -78,7 +80,7 @@ app.use('/api/v1/materials', materialRouter);
 app.use('/api/v1/assignments', assignmentRouter);
 app.use('/api/v1/progress', progressRouter);
 
-// 404 Route
+// Penanganan Rute Salah / 404 Not Found
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -87,7 +89,7 @@ app.use((req, res) => {
   });
 });
 
-// Global Error Handler
+// Middleware Terpusat Penanganan Error (Global Error Handler)
 app.use(errorHandler);
 
 module.exports = app;

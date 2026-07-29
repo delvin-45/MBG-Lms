@@ -95,7 +95,7 @@ export default function Register() {
 									onClick={() => setRole('student')}
 								>
 									<img
-										src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/p5244a9y_expires_30_days.png"}
+										src={"/Image (student).png"}
 										className="w-9 h-9 rounded-lg object-cover shrink-0"
 										alt="student"
 									/>
@@ -110,7 +110,7 @@ export default function Register() {
 									onClick={() => setRole('teacher')}
 								>
 									<img
-										src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/raqjkfpt_expires_30_days.png"}
+										src={"/Image (teacher).png"}
 										className="w-9 h-9 rounded-lg object-cover shrink-0"
 										alt="teacher"
 									/>
@@ -149,7 +149,7 @@ export default function Register() {
 							<label className="text-[#604868] text-xs font-bold px-1">Academic Email</label>
 							<div className="flex items-center bg-[#FBF2FB] py-2.5 px-4 gap-3 rounded-full border border-[#DCC8E0] focus-within:border-[#E040A0] focus-within:ring-2 focus-within:ring-[#E040A022] transition">
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/lypvtfbj_expires_30_days.png"}
+									src={"/Image (email).png"}
 									className="w-4 h-4 object-contain opacity-70"
 									alt="email"
 								/>
@@ -168,7 +168,7 @@ export default function Register() {
 							<label className="text-[#604868] text-xs font-bold px-1">Password</label>
 							<div className="flex items-center bg-[#FBF2FB] py-2.5 px-4 gap-3 rounded-full border border-[#DCC8E0] focus-within:border-[#E040A0] focus-within:ring-2 focus-within:ring-[#E040A022] transition">
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/rtx2r47x_expires_30_days.png"}
+									src={"/Image (password).png"}
 									className="w-4 h-4 object-contain opacity-70"
 									alt="password"
 								/>
@@ -197,7 +197,7 @@ export default function Register() {
 						>
 							<span>Create Account</span>
 							<img
-								src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/dzvb3lyq_expires_30_days.png"}
+								src={"/Image (arrow).png"}
 								className="w-4 h-4 object-contain"
 								alt="arrow"
 							/>

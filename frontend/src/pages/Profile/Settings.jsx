@@ -43,13 +43,14 @@ export default function Settings() {
 		}
 	}, [user]);
 
+	// Preview Foto Profil Instan: FileReader API membaca gambar menjadi string Base64 lokal sebelum dikirim ke server
 	const handleAvatarChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
 			setAvatarFile(file);
 			const reader = new FileReader();
 			reader.onloadend = () => {
-				setAvatarPreview(reader.result);
+				setAvatarPreview(reader.result); // Tampilkan preview instan di layar
 			};
 			reader.readAsDataURL(file);
 		}
@@ -131,7 +132,7 @@ export default function Settings() {
 					{isAdmin ? (
 						<>
 							{/* Admin Sidebar Links */}
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/dashboard-admin")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/dashboard-admin")}>
 								<span className="text-lg mr-3">👥</span>
 								<span className="text-[#604868] text-sm" >
 									{"User Management"}
@@ -141,40 +142,40 @@ export default function Settings() {
 					) : (
 						<>
 							{/* Student/Teacher Sidebar Links */}
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/dashboard")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/gi80hvh9_expires_30_days.png"}
-									className="w-[18px] h-[18px] mr-3 rounded-[9999px] object-fill"
+									src={"/Image (dashboard)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="dashboard"
 								/>
 								<span className="text-[#604868] text-sm" >
 									{"Dashboard"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/my-courses")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3jiucock_expires_30_days.png"}
-									className="w-[22px] h-[18px] mr-3 rounded-[9999px] object-fill"
+									src={"/Image (courses)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="courses"
 								/>
 								<span className="text-[#604868] text-sm" >
 									{"My Courses"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/assignments")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/vkctf8kg_expires_30_days.png"}
-									className="w-[18px] h-5 mr-3 rounded-[9999px] object-fill"
+									src={"/Image (assignments)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="assignments"
 								/>
 								<span className="text-[#604868] text-sm" >
 									{"Assignments"}
 								</span>
 							</div>
-							<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
+							<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/academic-progress")}>
 								<img
-									src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/3bwvb7zj_expires_30_days.png"}
-									className="w-5 h-3 mr-3 rounded-[9999px] object-fill"
+									src={"/Image (progress)_margin.png"}
+									className="w-5 h-5 mr-3.5 object-contain shrink-0"
 									alt="progress"
 								/>
 								<span className="text-[#604868] text-sm" >
@@ -185,10 +186,10 @@ export default function Settings() {
 					)}
 
 					{/* Profile Link */}
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full hover:bg-purple-50" onClick={() => navigate("/profile")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/csujep64_expires_30_days.png"}
-							className="w-4 h-4 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (profile)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="profile"
 						/>
 						<span className="text-[#604868] text-sm" >
@@ -197,10 +198,10 @@ export default function Settings() {
 					</div>
 
 					{/* Settings Link (Active) */}
-					<div className="flex items-center bg-[#F080C0] py-3 px-4 rounded-[9999px] cursor-pointer w-full text-[#2E1A28] font-bold" onClick={() => navigate("/settings")}>
+					<div className="flex items-center bg-[#F080C0] py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full text-[#2E1A28] font-bold" onClick={() => navigate("/settings")}>
 						<img
-							src={"https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/pi44b171_expires_30_days.png"}
-							className="w-5 h-5 mr-3 rounded-[9999px] object-fill"
+							src={"/Image (settings)_margin.png"}
+							className="w-5 h-5 mr-3.5 object-contain shrink-0"
 							alt="settings"
 						/>
 						<span className="text-sm" >
@@ -208,7 +209,7 @@ export default function Settings() {
 						</span>
 					</div>
 
-					<div className="flex items-center py-3 px-4 rounded-[9999px] cursor-pointer w-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
+					<div className="flex items-center py-3 px-4 cursor-pointer w-[calc(100%-1.5rem)] mx-3 rounded-full mt-auto text-red-500 hover:bg-red-50 font-bold" onClick={() => { logout(); navigate('/'); }}>
 						<span className="text-sm" >
 							{"Log Out"}
 						</span>
@@ -223,7 +224,7 @@ export default function Settings() {
 					<div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate("/profile")}>
 						<span className="text-sm font-bold text-[#2E1A28]">{user ? user.name : "ganjar 18%"}</span>
 						<img
-							src={user?.avatarUrl || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+							src={user?.avatarUrl || "/assets/default-avatar.png"}
 							className="w-10 h-10 object-cover rounded-full border-2 border-white shadow-sm"
 							alt="avatar"
 						/>
@@ -288,7 +289,7 @@ export default function Settings() {
 							<div className="flex flex-col md:flex-row items-center md:items-start gap-8 mt-2 w-full">
 								<div className="flex flex-col items-center gap-2">
 									<img
-										src={avatarPreview || "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/wQwYXX2xM2/uc6jo6mt_expires_30_days.png"}
+										src={avatarPreview || "/assets/default-avatar.png"}
 										className="w-[100px] h-[100px] min-w-[100px] min-h-[100px] max-w-[100px] max-h-[100px] rounded-full border-2 border-white object-cover shadow-[0px_4px_16px_rgba(0,0,0,0.08)] cursor-pointer hover:scale-105 transition"
 										alt="avatar preview"
 										onClick={() => fileInputRef.current?.click()}

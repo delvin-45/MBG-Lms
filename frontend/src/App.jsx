@@ -21,27 +21,27 @@ import Profile from './pages/Profile/Profile';
 import Settings from './pages/Profile/Settings';
 import AddAssignment from './pages/Assignments/AddAssignment';
 
-// Protected Route wrapper
+// 1. Penjaga Rute Umum: Wajib Login dulu. Kalau belum login, paksa lempar ke /login
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// Admin Route wrapper
+// 2. Penjaga Rute Khusus Admin: Hanya role 'admin' yang bisa masuk. Kalau bukan, lempar ke /dashboard
 function AdminRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   return user.role === 'admin' ? children : <Navigate to="/dashboard" replace />;
 }
 
-// Student or Teacher Route wrapper
+// 3. Penjaga Rute Student & Teacher: Hanya role 'student' atau 'teacher' yang boleh masuk
 function StudentOrTeacherRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   return (user.role === 'student' || user.role === 'teacher') ? children : <Navigate to="/dashboard-admin" replace />;
 }
 
-// Dashboard Redirect based on role
+// Pengarah Otomatis Dashboard: Mengarahkan user ke layar dashboard yang sesuai dengan role-nya
 function DashboardRedirect() {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
